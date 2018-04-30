@@ -188,11 +188,13 @@ for jj = 1:nbr_cds
     end
 end
 
-legend_names = {};
-for jj = 1:nbr_cds
-    legend_names(end+1) = cellstr(cds(jj).meta.rawFileName);
-end
-legend(LN,legend_names);
+% % so far a legend just seems to make everything messy. Consider adding a
+% % hover or tool tip that gives the names
+% legend_names = {};
+% for jj = 1:nbr_cds
+%     legend_names(end+1) = cellstr(cds(jj).meta.rawFileName);
+% end
+% legend(LN,legend_names);
 
 % -------------------------------------------------------------------------
 % return the handle

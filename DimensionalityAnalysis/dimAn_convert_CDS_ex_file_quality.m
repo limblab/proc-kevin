@@ -16,35 +16,39 @@
 
 %-------------------------------------------------------------------------%
 % Base parameters
-fileName = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Projects\BMI Dimensionality\Standard nevs\Data Files\20170207_Jango_IsoWF_001.nev'; % make this a local file, because running through the network is SLOW
+% fileName = 'C:\Users\klb807\Documents\Data\Nev\CageData\Jango\20170524\20170524_Jango_Cage_1.nev'; % make this a local file, because running through the network is SLOW
+[fileName,pathName] = uigetfile('C:\Users\klb807\Documents\Data\Nev\CageData\*.nev')
+
+fileName = [pathName,filesep,fileName];
 
 % CDS params. see my cds_base_parameters.m script for examples if you're
 % not sure how this should look
-mapFile = '';
-monkey = 'Jango';
-ranBy = 'KevinHP';
-task = 'WF';
+mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\RetiredMonkeys\Fish_12H2\Array Maps\LeftM1 -doublecheck\SN 6250-001687.cmp';
+monkey = 'Fish';
+ranBy = 'KBandPT';
+task = 'none';
 lab = 1;
 array_names = 'arrayM1';
+recordDate = '';
 
 % experimental data parameters. This will depend on what's in the recorded
 % file, so change accordingly
-hasTrials = true;
-hasForces = true;
-hasKinematics = true;
+hasTrials = false;
+hasForces = false;
+hasKinematics = false;
 hasEmg = true;
 hasUnits = true; % this better always be true
 
 % filenames to store. Don't fuck with them please, I like my defaults
-cdsFilename = strsplit(fileName,'.');
+baseFilename = strsplit(fileName,'.');
+baseFilename = strjoin(baseFilename(1:end-1),'.');
 % make a new subfolder so the base folder doesn't get too crapped up
-subFolder = [strjoin(cdsFilename(1:end-1),'.'),'_SupportFiles'];
+subFolder = [baseFilename,'_SupportFiles'];
 mkdir(subFolder);
-exFilename = [strjoin(cdsFilename(1:end-1),'.'),'_ex.mat']; % experiment file name
-cdsFilename = [strjoin(cdsFilename(1:end-1),'.'),'_cds.mat']; % same for cds
-bmiDimAnLogFolder = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Projects\BMI Dimensionality\Standard nevs'; % and the folder it's in?
-bmiDimAnLog = [bmiDimAnLogFolder,filesep,'standard_Files_Log']; % where's the log stored?
-mkdir([bmiDimAnLogFolder,filesep,subFolder]) % make a subfolder by the log too for all of the associated plots
+exFilename = [baseFilename,'_ex.mat']; % experiment file name
+cdsFilename = [baseFilename,'_cds.mat']; % same for cds
+% bmiDimAnLogFolder = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Projects\BMI Dimensionality\Standard nevs'; % and the folder it's in?
+% bmiDimAnLog = [bmiDimAnLogFolder,filesep,'standard_Files_Log.csv']; % where's the log stored?
 
 
 
@@ -60,14 +64,14 @@ overWriteEx = true;
 
 % if the _cds and _ex.mat files exist on the user's computer, ask if we
 % want to write over them or just load the existing ones
-if exist(cdsFilename,'file')||exist([subfolder,filesep,cdsFilename],'file')
+if exist(cdsFilename,'file')||exist([subFolder,filesep,cdsFilename],'file')
     owCDS = input('Do you want to reconvert and save over the existing CDS file?(Y/N)','s');
     if strcmpi(owCDS,'n')
         overWriteCDS = false;
     end
 end
 
-if (exist(exFilename,'file')||exist([subfolder,filesep,cdsFilename],'file'))&&~overWriteCDS
+if (exist(exFilename,'file')||exist([subFolder,filesep,cdsFilename],'file'))&&~overWriteCDS
     owEx = input('Do you want to reconvert and save over the existing Experimental Class file?(Y?N)','s');
     if strcmpi(owEx,'n')
         overWriteEx = false;
@@ -86,15 +90,16 @@ else
         load(cdsFilename,'cds')
     else
         disp('Creating CDS')
-        cds.file2cds(files{fileNum},lab{fileNum},['array', array_names],['monkey', monkey],...
-            ['task', task{fileNum}],['ranBy', ranBy{fileNum}],'ignoreJumps',['mapFile', mapFile{fileNum}]); % load it with all those goodies
+        cds = commonDataStructure;
+        cds.file2cds(fileName,lab,['array', array_names],['monkey', monkey],...
+            ['task', task],['ranBy', ranBy],'ignoreJumps',['mapFile', mapFile]); % load it with all those goodies
         disp('Saving CDS')
-        save([subFolder,filesep,cdsFilename],'cds','-v7.3') % save it. Needs to be matlab standard v7.3+
+        save(cdsFilename,'cds','-v7.3') % save it. Needs to be matlab standard v7.3+
     end
     disp('Creating experiment data structure');
     ex = experiment; % new empty experimental data class
     
-        ex.meta.hasEmg = true; % want to load EMGs
+    ex.meta.hasEmg = true; % want to load EMGs
     ex.meta.hasUnits = true; % and units
     ex.meta.hasTrials = hasTrials; % and trials if we have them
     ex.meta.hasForce = hasForces; % we'll just make it true for the cage, then check
@@ -115,11 +120,13 @@ else
     end
     
     if ex.meta.hasKinematics
-        ex.binConfig.include(4).field = 'kin'; % same with kinematics
+        ex.binConfig.include(end+1).field = 'kin'; % same with kinematics
     end
     
     ex.binData; % bin it all
-    save([subFolder,filesep,exFilename],'ex','-v7.3')
+%     save(exFilename,'ex','-v7.3')
+
+
 end
 
 
@@ -127,27 +134,36 @@ end
 %%
 %-------------------------------------------------------------------------%
 % plot firing rate and EMGs
+
+
+
 disp('Plotting firing rate')
 [binnedUnitNames,binnedUnitMask] = ex.bin.getUnitNames; % because this binnedStructure is weird
 emgMask = ~cellfun(@(x)isempty(strfind(x,'EMG')),ex.bin.data.Properties.VariableNames); % and again...
 emgNames = ex.bin.data.Properties.VariableNames(emgMask); % don't get it... 
 
+% % remove channels whose mean firing rates are greater than 50 or less
+% % than 1
+% meanFR = mean(ex.bin.data{:,:},1); % means of everything
+% meanFR = meanFR.*binnedUnitMask; % throw away non-units
+% ex.bin.data{:,meanFR>50} = 0; % throw away those high firing ones
+
 % this is one of my commands that should spit out firing rates and EMGs so that you can 
 % zoom on the EMGs and it will automatically fit the FR window to the same time period.  
 plot_FR_EMG(ex.bin.data{:,binnedUnitMask},ex.bin.data{:,emgMask},ex.bin.data.t,emgNames);
-FREMGFilename = [bmiDimAnLogFolder,filesep,subFolder,'FR_EMG_plot'];
+FREMGFilename = [subFolder,filesep,'FR_EMG_plot'];
 saveas(gcf,FREMGFilename,'fig'); % save as a matlab figure to keep the listeners working
-close(gcf)
+% close(gcf)
 
 %%
 %-------------------------------------------------------------------------%
-% plot mean waveforms - gives us an idea of how everything looks
-disp('Plotting waveforms, not sure this will be useful...')
-ff = plot_AP_map_cds(cds)
-clear cds; % unfortunately the earliest it looks like we can do this...
-wfFilename = [bmiDimAnLogFolder,filesep,subFolder,'AP_map'];
-saveas(ff,wfFilename,'fig'); % I don't really remember what this looks like...
-close(ff);
+% % plot mean waveforms - gives us an idea of how everything looks
+% disp('Plotting waveforms, not sure this will be useful...')
+% ff = plot_AP_map_cds(cds)
+% clear cds; % unfortunately the earliest it looks like we can do this...
+% wfFilename = [subFolder,filesep,'AP_map'];
+% saveas(ff,wfFilename,'fig'); % I don't really remember what this looks like...
+% close(ff);
 
 %%
 %-------------------------------------------------------------------------%
@@ -158,8 +174,22 @@ ex.bin.weinerConfig.numFolds = 10; % run mfxval
 
 ex.bin.fitWeiner;
 
+save(exFilename,'ex','-v7.3')
 
 %%
 %-------------------------------------------------------------------------%
 % store errthing inside the csv log
 
+% logCell = {monkey,...
+%             recordDate,...
+%             lab,...
+%             task,...
+%             fileName,...
+%             {mean([ex.bin.weinerData.VAF],2)},...
+%             {emgNames},...
+%             FREMGFilename,...
+%             wfFilename};
+
+mean([ex.bin.weinerData.VAF],2)
+
+% dlmwrite(bmiDimAnLog,logCell,-append)
