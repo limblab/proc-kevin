@@ -25,8 +25,8 @@ fileName = [pathName,filesep,fileName];
 % not sure how this should look
 mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\RetiredMonkeys\Fish_12H2\Array Maps\LeftM1 -doublecheck\SN 6250-001687.cmp';
 monkey = 'Fish';
-ranBy = 'KBandPT';
-task = 'none';
+ranBy = 'KBandSN';
+task = 'WF';
 lab = 1;
 array_names = 'arrayM1';
 recordDate = '';
