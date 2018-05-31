@@ -1,6 +1,10 @@
-function Leefy()% Sets properties of figure to what Lee likes
+function Leefy(fhandle)% Sets properties of figure to what Lee likes
 
-longassfigurename = gcf; %get current figure
+if nargin == 0
+    longassfigurename = gcf; %get current figure
+else
+    longassfigurename = fhandle;
+end
 
 for a = 1:length(longassfigurename.Children) % for all axes on the figure
     longassaxisname = longassfigurename.Children(a);
@@ -12,6 +16,7 @@ for a = 1:length(longassfigurename.Children) % for all axes on the figure
     end
 end
 
-clear longassaxisname longassfigurename % make sure we don't have any issues bla bla
+%
+% clear longassaxisname longassfigurename % make sure we don't have any issues bla bla
 
 end

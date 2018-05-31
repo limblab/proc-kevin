@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name OmneticsConnector)(type KiCad)(uri "$(KIPRJMOD)/OmneticsConnector.pretty")(options "")(descr ""))
+)
