@@ -33,9 +33,9 @@ recordDate = '';
 
 % experimental data parameters. This will depend on what's in the recorded
 % file, so change accordingly
-hasTrials = false;
-hasForces = false;
-hasKinematics = false;
+hasTrials = true;
+hasForces = true;
+hasKinematics = true;
 hasEmg = true;
 hasUnits = true; % this better always be true
 
