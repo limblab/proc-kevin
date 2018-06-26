@@ -60,7 +60,8 @@ TDsmooth = getMoveOnsetAndPeak(TDsmooth,pkMvParams);
 
 % realign to the movement onset, trim so that we have 200 ms before and 400
 % ms after. Right now, with a 10 ms bin that's -20 and 40
-TDsmooth = trimTD(TDsmooth,{'idx_movement_on',-20},{'idx_movement_on',40});
+TDsmooth = trimTD(TDsmooth,{'idx_movement_on',-(.2/TDsmooth(1).bin_size)},...
+    {'idx_movement_on',.4/TDsmooth(1).bin_size});
 
 
 
@@ -68,4 +69,21 @@ TDsmooth = trimTD(TDsmooth,{'idx_movement_on',-20},{'idx_movement_on',40});
 
 pcaParams = struct('signals','arrayM1_spikes','do_plot',true);
 TDsmooth = getPCA(TDsmooth,pcaParams);
+
+
+%% jPCA
+
+% first 10 dimensions
+tempPCAMatrix = [TDsmooth.arrayM1_pca]; % take out all of the trials
+tempPCAMatrix = reshape(tempPCAMatrix,size(TDsmooth(1).arrayM1_pca),length(TDsmooth)); % reshape into a 3d matrix
+meanPCWeights = mean(tempPCAMatrix,3); % means of each dimension over time
+
+velMeanPC = meanPCWeights(1:end-1,1:10)-meanPCWeights(2:end,1:10)./TDsmooth(1).bin_size;
+
+velMeanVec = velMeanPC(:);
+meanPCBlk = blkdiag(meanPCWeights,meanPCWeights,...
+    meanPCWeights,meanPCWeights,meanPCWeights,meanPCWeights,...
+    meanPCWeights,meanPCWeights,meanPCWeights,meanPCWeights); % repeat for each of the dimensions, eh?
+
+
 
