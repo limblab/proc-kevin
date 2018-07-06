@@ -28,31 +28,32 @@ load([tdFolder,filesep,tdName],'TD');
 
 %% if the TD isn't properly loaded
 % bad kin
-tdFolder = 'Z:\limblab\lab_folder\Projects\BMI_Dimensionality\Ali_s_NIPS_Stuff';
-tdName =  'Jango_20160626_WFiso_R10T4_001_TD.mat';
-cdsName = 'Jango_20160626_WFiso_R10T4_001_cds.mat';
+% tdFolder = 'Z:\limblab\lab_folder\Projects\BMI_Dimensionality\Ali_s_NIPS_Stuff';
+% tdName =  'Jango_20160626_WFiso_R10T4_001_TD.mat';
+% cdsName = 'Jango_20160626_WFiso_R10T4_001_cds.mat';
+% 
+% % 'Jango_20160623_WFiso_R10T4_001_TD.mat';
+% % 'Jango_20160623_WFiso_R10T4_002_TD.mat';
+% % 'Jango_20160626_WFiso_R10T4_001_TD.mat';
+% % 'Jango_20160626_WFiso_R10T4_002_TD.mat';
+% % 'Jango_20160627_WFiso_R10T4_001_TD.mat';
+% % 'Jango_20160627_WFiso_R10T4_002_TD.mat';
+% 
+% % load the cds
+% load([tdFolder,filesep,cdsName],'cds');
+% params = struct('exclude_units',255,'include_ts',true,'include_start',true,'trial_results',{{'R','A','F','I'}});
+% params.event_list = {'startTime','startTime';'endTime','endTime';,'goCue','goCueTime';'tgtOn','tgtOnTime'};
+% 
+% TD = parseFileByTrial(cds,params);
+% save([tdFolder,filesep,tdName],'TD','-v7.3'); % save it so we don't have to do this again later.
 
-% 'Jango_20160623_WFiso_R10T4_001_TD.mat';
-% 'Jango_20160623_WFiso_R10T4_002_TD.mat';
-% 'Jango_20160626_WFiso_R10T4_001_TD.mat';
-% 'Jango_20160626_WFiso_R10T4_002_TD.mat';
-% 'Jango_20160627_WFiso_R10T4_001_TD.mat';
-% 'Jango_20160627_WFiso_R10T4_002_TD.mat';
-
-% load the cds
-load([tdFolder,filesep,cdsName],'cds');
-params = struct('exclude_units',255,'include_ts',true,'include_start',true,'trial_results',{{'R','A','F','I'}});
-params.event_list = {'startTime','startTime';'endTime','endTime';,'goCue','goCueTime';'tgtOn','tgtOnTime'};
-
-TD = parseFileByTrial(cds,params);
-save([tdFolder,filesep,tdName],'TD','-v7.3'); % save it so we don't have to do this again later.
 
 
-
-%% smooth it using a gaussian kernal
-smoothParams.kernel_SD = .05;
-smoothParams.signals = 'arrayM1_spikes';
-TDsmooth = smoothSignals(TD,smoothParams);
+%% normalize and smooth it using a gaussian kernal
+TDsmooth = softNormalize(TD); % just run the default params over it
+smoothParams.kernel_SD = .02; % like in da paypa
+smoothParams.signals = 'arrayM1_spikes'; 
+TDsmooth = smoothSignals(TDsmooth,smoothParams);
 
 %% Align and trim trials
 pkMvParams = struct('which_method','peak','which_field','vel');
@@ -61,8 +62,14 @@ TDsmooth = getMoveOnsetAndPeak(TDsmooth,pkMvParams);
 % realign to the movement onset, trim so that we have 200 ms before and 400
 % ms after. Right now, with a 10 ms bin that's -20 and 40
 TDsmooth = trimTD(TDsmooth,{'idx_movement_on',-(.2/TDsmooth(1).bin_size)},...
-    {'idx_movement_on',.4/TDsmooth(1).bin_size});
+    {'idx_movement_on',1/TDsmooth(1).bin_size});
 
+
+%% remove condition independent signals
+
+meanMatrix = [TDsmooth.arrayM1_spikes]; % take out all of the trials
+meanMatrix = reshape(meanMatrix,[size(TDsmooth(1).arrayM1_spikes),length(TDsmooth)]); % reshape into a 3d matrix
+meanMatrix = mean(meanMatrix,3); % means of each dimension over time
 
 
 %% find the trial averaged PCA 
@@ -71,19 +78,224 @@ pcaParams = struct('signals','arrayM1_spikes','do_plot',true);
 TDsmooth = getPCA(TDsmooth,pcaParams);
 
 
+%% plot the PCA projections
+% Plot some projections 
+% initialize axes
+figure
+ax(1) = subplot(1,3,1);
+axis square
+hold on
+xlabel('Time')
+ylabel('PC1')
+ax(2) = subplot(1,3,2);
+axis square
+hold on
+xlabel('Time')
+ylabel('PC2')
+ax(3) = subplot(1,3,3);
+axis square
+hold on
+xlabel('Time')
+ylabel('PC3')
+cMap = summer;
+
+
+
+
+for ii = randperm(length(TDsmooth),40)
+    traceColor = cMap(ceil((cos(TDsmooth(ii).target_direction)+1)*31)+1,:);
+    axes(ax(1))
+    plot(TDsmooth(ii).arrayM1_pca(:,1),'Color',traceColor,'LineWidth',0.25);
+    axes(ax(2))
+    plot(TDsmooth(ii).arrayM1_pca(:,2),'Color',traceColor,'LineWidth',0.25);
+    axes(ax(3))
+    plot(TDsmooth(ii).arrayM1_pca(:,3),'Color',traceColor,'LineWidth',0.25);
+end
+
+Leefy
+
+
 %% jPCA
+dims = 10; % number of PCA dimensions we want to use. Should be EVEN
+
 
 % first 10 dimensions
 tempPCAMatrix = [TDsmooth.arrayM1_pca]; % take out all of the trials
-tempPCAMatrix = reshape(tempPCAMatrix,size(TDsmooth(1).arrayM1_pca),length(TDsmooth)); % reshape into a 3d matrix
+tempPCAMatrix = reshape(tempPCAMatrix,[size(TDsmooth(1).arrayM1_pca),length(TDsmooth)]); % reshape into a 3d matrix
 meanPCWeights = mean(tempPCAMatrix,3); % means of each dimension over time
 
-velMeanPC = meanPCWeights(1:end-1,1:10)-meanPCWeights(2:end,1:10)./TDsmooth(1).bin_size;
+meanPCdot = meanPCWeights(1:end-1,1:dims)-meanPCWeights(2:end,1:dims)./TDsmooth(1).bin_size; % finite different estimation of derivative
 
-velMeanVec = velMeanPC(:);
+meanPCdot = meanPCdot(:); % xdot vector
+meanPCWeights = meanPCWeights(1:end-1,1:dims); % shoring up the size of the matrices
 meanPCBlk = blkdiag(meanPCWeights,meanPCWeights,...
     meanPCWeights,meanPCWeights,meanPCWeights,meanPCWeights,...
-    meanPCWeights,meanPCWeights,meanPCWeights,meanPCWeights); % repeat for each of the dimensions, eh?
+    meanPCWeights,meanPCWeights,meanPCWeights,meanPCWeights); % Xtilde
+
+% define the H vector that will get us from the k to Mskew
+maxJ = dims*(dims-1)/2; % maximum number of independent dimensions
+jVectPos = 1; % skew matrix j
+jVectNeg = 1; % skew matrix -j 
+H = zeros(dims^2,maxJ); % initialize H
+
+% H for the bottom triangle of M
+for ii = 1:dims^2
+    if (mod(ii-1,dims)+1) > ceil(ii/dims);
+        H(ii,jVectNeg) = -1;
+        jVectNeg = jVectNeg + 1;
+    end
+end
+
+kTemp = 1:maxJ; % temporary k vector
+mTemp = H*kTemp'; % temporary Mskew
+mTemp = reshape(mTemp,[dims,dims]);
+mTemp = mTemp - mTemp'; % skew symmetry, yo
+mTemp = mTemp(:); % unroll it
+
+for ii = 1:dims^2
+    if mTemp(ii) ~= 0
+        H(ii,abs(mTemp(ii))) = sign(mTemp(ii)); % create both sides of the H vector, hopefully...
+    end
+end
+
+
+% Now for the big show - we'll just do it with the normal eqn I think...
+k = meanPCBlk*H\meanPCdot;
+mSkew = H*k;
+mSkew = reshape(mSkew,[dims,dims]);
+
+% Eigen decomposition of mSkew (because they said so)
+[vSkew,~] = eig(mSkew);
+
+clear maxJ jVectPos jVectNeg kTemp mTemp
+
+%% Projections for the first few planes
+
+% first plane
+uOne = vSkew(:,1)+vSkew(:,2);
+uTwo = j*(vSkew(:,1)-vSkew(:,2));
+
+% second plane
+uThree = vSkew(:,3)+vSkew(:,4);
+uFour = j*(vSkew(:,3)-vSkew(:,4));
+
+% third plane
+uFive = vSkew(:,5)+vSkew(:,6);
+uSix = j*(vSkew(:,5)-vSkew(:,6));
+
+
+
+% Plot some projections 
+% initialize axes
+figure
+ax(1) = subplot(1,3,1);
+axis square
+hold on
+xlabel('Projection 1')
+ylabel('Projection 2')
+ax(2) = subplot(1,3,2);
+axis square
+hold on
+xlabel('Projection 3')
+ylabel('Projection 4')
+ax(3) = subplot(1,3,3);
+axis square
+hold on
+xlabel('Projection 5')
+ylabel('Projection 6')
+cMap = autumn;
+
+
+
+
+for ii = randperm(length(TDsmooth),40)
+    traceColor = cMap(ceil((cos(TDsmooth(ii).target_direction)+1)*31)+1,:);
+    axes(ax(1))
+    projOne = TDsmooth(ii).arrayM1_pca(1:81,1:dims)*uOne;
+    projTwo = TDsmooth(ii).arrayM1_pca(1:81,1:dims)*uTwo;
+    plot(projOne,projTwo,'Color',traceColor,'LineWidth',0.25);
+    plot(projOne(1),projTwo(1),'ko')
+    axes(ax(2))
+    projThree = TDsmooth(ii).arrayM1_pca(1:81,1:dims)*uThree;
+    projFour = TDsmooth(ii).arrayM1_pca(1:81,1:dims)*uFour;
+    plot(projThree,projFour,'Color',traceColor,'LineWidth',0.25);
+    plot(projThree(1),projFour(1),'ko')
+    axes(ax(3))
+    projFive = TDsmooth(ii).arrayM1_pca(1:81,1:dims)*uFive;
+    projSix = TDsmooth(ii).arrayM1_pca(1:81,1:dims)*uSix;
+    plot(projFive,projSix,'Color',traceColor,'LineWidth',0.25);
+    plot(projFive(1),projSix(1),'ko')
+end
+
+Leefy    
+
+
+%% plot the jPCA projections in time
+% initialize axes
+figure
+ax(1) = subplot(2,3,1);
+axis square
+hold on
+xlabel('Time')
+ylabel('jPC1')
+ax(2) = subplot(2,3,4);
+axis square
+hold on
+xlabel('Time')
+ylabel('jPC2')
+ax(3) = subplot(2,3,2);
+axis square
+hold on
+xlabel('Time')
+ylabel('jPC3')
+ax(4) = subplot(2,3,5);
+axis square
+hold on
+xlabel('Time')
+ylabel('jPC4')
+ax(5) = subplot(2,3,3);
+axis square
+hold on
+xlabel('Time')
+ylabel('jPC5')
+ax(6) = subplot(2,3,6);
+axis square
+hold on
+xlabel('Time')
+ylabel('jPC6')
+cMap = summer;
+
+
+ts = [-.2:.01:1];
+
+for ii = randperm(length(TDsmooth),40)
+    traceColor = cMap(ceil((cos(TDsmooth(ii).target_direction)+1)*31)+1,:);
+    
+    projOne = TDsmooth(ii).arrayM1_pca(:,1:dims)*uOne;
+    projTwo = TDsmooth(ii).arrayM1_pca(:,1:dims)*uTwo;
+    axes(ax(1))
+    plot(ts,projOne,'Color',traceColor,'LineWidth',0.25);
+    axes(ax(2))
+    plot(ts,projTwo,'Color',traceColor,'LineWidth',0.25);
+  
+    projThree = TDsmooth(ii).arrayM1_pca(:,1:dims)*uThree;
+    projFour = TDsmooth(ii).arrayM1_pca(:,1:dims)*uFour;
+    axes(ax(3))
+    plot(ts,projThree,'Color',traceColor,'LineWidth',0.25);
+    axes(ax(4))
+    plot(ts,projFour,'Color',traceColor,'LineWidth',0.25);
+    
+    projFive = TDsmooth(ii).arrayM1_pca(:,1:dims)*uFive;
+    projSix = TDsmooth(ii).arrayM1_pca(:,1:dims)*uSix;
+    axes(ax(5))
+    plot(ts,projFive,'Color',traceColor,'LineWidth',0.25);
+    axes(ax(6))
+    plot(ts,projSix,'Color',traceColor,'LineWidth',0.25);
+end
+
+
+
+
 
 
 
