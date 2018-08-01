@@ -10,10 +10,17 @@
 % since Juan claims it's quality stuff.
 
 
+%% Add all relevent directories to the path
+% assuming we're in the proc-kevin\jPCA folder
+addpath 'jPCA_with_CP_mods' -END
+addpath '
+
+
+
 %% if the TD is already properly loaded
 % meaning we have it with kinematics etc.
 tdFolder = 'D:\Jango\Ali_s NIPS stuff';
-tdName =  'Jango_20160623_WFiso_R10T4_001_TD.mat';
+tdName =  'Jango_20160623_WFiso_R10T4_002_TD.mat'
 
 % 'Jango_20160623_WFiso_R10T4_001_TD.mat';
 % 'Jango_20160623_WFiso_R10T4_002_TD.mat';

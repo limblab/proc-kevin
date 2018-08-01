@@ -283,7 +283,7 @@
   )
 
   (module Pin_Headers:Pin_Header_Straight_2x25_Pitch1.27mm_SMD (layer F.Cu) (tedit 59650537) (tstamp 5B1043CD)
-    (at 217.678 99.568)
+    (at 156.591 88.519)
     (descr "surface-mounted straight pin header, 2x25, 1.27mm pitch, double rows")
     (tags "Surface mounted pin header SMD 2x25 1.27mm double row")
     (path /5A82285D)
@@ -3453,7 +3453,7 @@
   (segment (start 99.441 72.39) (end 99.441 70.358) (width 0.1524) (layer F.Cu) (net 0) (tstamp 5B106738))
   (segment (start 99.441 70.358) (end 99.441 68.326) (width 0.1524) (layer F.Cu) (net 0) (tstamp 5B106752))
   (segment (start 99.441 68.326) (end 99.441 66.294) (width 0.1524) (layer F.Cu) (net 0) (tstamp 5B106766))
-  (segment (start 116.525 57.023) (end 116.525 64.709) (width 0.1524) (layer F.Cu) (net 70) (status 400000))
+  (segment (start 116.525 57.023) (end 116.525 64.709) (width 0.1524) (layer F.Cu) (net 70))
   (segment (start 116.525 64.709) (end 116.713 64.897) (width 0.1524) (layer F.Cu) (net 70) (tstamp 5B119FF7))
 
 )
