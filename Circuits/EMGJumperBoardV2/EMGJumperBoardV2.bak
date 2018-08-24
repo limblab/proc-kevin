@@ -1,0 +1,82 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:SamtecInterconnects
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Conn_02x18_Odd_Even J?
+U 1 1 5B8027D3
+P 5650 850
+F 0 "J?" H 5700 1750 50  0000 C CNN
+F 1 "Conn_02x18_Odd_Even" H 5700 -150 50  0000 C CNN
+F 2 "" H 5650 850 50  0001 C CNN
+F 3 "" H 5650 850 50  0001 C CNN
+	1    5650 850 
+	0    -1   1    0   
+$EndComp
+$Comp
+L Conn_02x25_Odd_Even J?
+U 1 1 5B8028F6
+P 10600 4350
+F 0 "J?" H 10650 5650 50  0000 C CNN
+F 1 "Conn_02x25_Odd_Even" H 10650 3050 50  0000 C CNN
+F 2 "" H 10600 4350 50  0001 C CNN
+F 3 "" H 10600 4350 50  0001 C CNN
+	1    10600 4350
+	1    0    0    -1  
+$EndComp
+$Comp
+L SamtecOmneticsInterconnect U?
+U 1 1 5B805B07
+P -5500 3450
+F 0 "U?" H -5550 13200 60  0000 C CNN
+F 1 "SamtecOmneticsInterconnect" H -5600 13300 60  0000 C CNN
+F 2 "" H -5550 13200 60  0001 C CNN
+F 3 "" H -5550 13200 60  0001 C CNN
+	1    -5500 3450
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
