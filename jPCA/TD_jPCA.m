@@ -12,8 +12,8 @@
 
 %% if the TD is already properly loaded
 % meaning we have it with kinematics etc.
-tdFolder = 'Z:\limblab\lab_folder\Projects\BMI_Dimensionality\Ali_s_NIPS_Stuff';
-tdName =  'Jango_20160626_WFiso_R10T4_001_TD.mat';
+tdFolder = 'D:\Jango\Ali_s NIPS stuff';
+tdName =  'Jango_20160623_WFiso_R10T4_001_TD.mat';
 
 % 'Jango_20160623_WFiso_R10T4_001_TD.mat';
 % 'Jango_20160623_WFiso_R10T4_002_TD.mat';
@@ -25,6 +25,8 @@ tdName =  'Jango_20160626_WFiso_R10T4_001_TD.mat';
 
 % load the trial data file
 load([tdFolder,filesep,tdName],'TD');
+TD = rmfield(TD,'arrayM1_ts');
+
 
 %% if the TD isn't properly loaded
 % bad kin
@@ -50,14 +52,19 @@ load([tdFolder,filesep,tdName],'TD');
 
 
 %% normalize and smooth it using a gaussian kernal
-TDsmooth = softNormalize(TD); % just run the default params over it
-smoothParams.kernel_SD = .02; % like in da paypa
+% TDsmooth = softNormalize(TD); % just run the default params over it
+smoothParams.kernel_SD = .05; % like in da paypa
 smoothParams.signals = 'arrayM1_spikes'; 
-TDsmooth = smoothSignals(TDsmooth,smoothParams);
+TDsmooth = smoothSignals(TD,smoothParams);
+
+% TDsmooth = TDsmooth([TDsmooth.result] == 'R'); % get rid of the
+% non-successes
 
 %% Align and trim trials
 pkMvParams = struct('which_method','peak','which_field','vel');
 TDsmooth = getMoveOnsetAndPeak(TDsmooth,pkMvParams);
+
+
 
 % realign to the movement onset, trim so that we have 200 ms before and 400
 % ms after. Right now, with a 10 ms bin that's -20 and 40
@@ -65,17 +72,24 @@ TDsmooth = trimTD(TDsmooth,{'idx_movement_on',-(.2/TDsmooth(1).bin_size)},...
     {'idx_movement_on',1/TDsmooth(1).bin_size});
 
 
-%% remove condition independent signals
 
-meanMatrix = [TDsmooth.arrayM1_spikes]; % take out all of the trials
-meanMatrix = reshape(meanMatrix,[size(TDsmooth(1).arrayM1_spikes),length(TDsmooth)]); % reshape into a 3d matrix
-meanMatrix = mean(meanMatrix,3); % means of each dimension over time
+%% Find the condition mean signals and the condition independent signals
+
+[TDavg,idx_conditions] = trialAverage(TDsmooth,'target_direction'); % find the condition means
+TDavg = subtractConditionMean(TDavg);
 
 
 %% find the trial averaged PCA 
 
-pcaParams = struct('signals','arrayM1_spikes','do_plot',true);
-TDsmooth = getPCA(TDsmooth,pcaParams);
+%caParams = struct('signals','arrayM1_spikes','do_plot',true);
+%TDavg = getPCA(TDavg,pcaParams);
+
+% copy and reshape the average 
+
+spikes = [TDavg.arrayM1_spikes];
+spikes = reshape(spikes, 121*8, 96);
+[avgCoeff,avgScore] = pca(spikes);
+
 
 
 %% plot the PCA projections
