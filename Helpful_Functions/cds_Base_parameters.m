@@ -27,9 +27,27 @@ lab = 6;
 array_names = 'arrayPMd';
 
 
+%% Greyson left M1
+mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\Greyson_17L2\Array Map Files\6250-001696 (Left M1 2018)\SN 6250-001696.cmp';
+monkey = 'Greyson';
+ranBy = 'Kevin';
+task = 'cage';
+lab = 0;
+array_names = 'leftM1';
+
+
+%% Jaco 
+mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Lab-Wide Animal Info\Implants\Blackrock Array Info\Array Map Files\1025-0397\1025-0397.cmp'
+monkey = 'Jaco';
+ranBy = 'ChristianE'
+task = 'ball_drop';
+lab = 1;
+array_names = 'rightM1';
+
+
 %% Add to a cds object
 cds = commonDataStructure;
-file =  'X:\Jango_12a1\CerebusData\BMI-FES\20170815\20170815_Jango_KB_MG_Wired_003.nev';
+file =  'C:\Users\klb807\Documents\Data\ForAlessandro\03-21-11\Jaco_03-21-11_003.nev';
 
 
 
