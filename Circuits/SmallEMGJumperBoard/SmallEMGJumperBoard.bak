@@ -1,0 +1,1375 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:SamtecInterconnects
+LIBS:EMGJumperBoardV2-cache
+LIBS:SmallEMGJumperBoard-cache
+EELAYER 25 0
+EELAYER END
+$Descr B 17000 11000
+encoding utf-8
+Sheet 1 1
+Title "All Muscles"
+Date ""
+Rev ""
+Comp ""
+Comment1 "EMGs from a single pair from all muscles"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Conn_02x18_Odd_Even J1
+U 1 1 5B84264F
+P 1650 2200
+F 0 "J1" H 1700 3100 50  0000 C CNN
+F 1 "Conn_02x18_Odd_Even" H 1700 1200 50  0000 C CNN
+F 2 "OmneticsConnector:Intan_RHD2132_Converter" H 1650 2200 50  0001 C CNN
+F 3 "" H 1650 2200 50  0001 C CNN
+	1    1650 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L Conn_02x25_Odd_Even J2
+U 1 1 5B842724
+P 4150 2500
+F 0 "J2" H 4200 3800 50  0000 C CNN
+F 1 "Conn_02x25_Odd_Even" H 4200 1200 50  0000 C CNN
+F 2 "samtec:FTSH-125-01-F-MT" H 4150 2500 50  0001 C CNN
+F 3 "" H 4150 2500 50  0001 C CNN
+	1    4150 2500
+	1    0    0    -1  
+$EndComp
+Text Label 3600 1300 2    60   ~ 0
+FDP2_1
+Text Label 4800 1300 0    60   ~ 0
+FDP2_2
+Text Label 3600 1400 2    60   ~ 0
+FCR2_1
+Text Label 4800 1400 0    60   ~ 0
+FCR2_2
+Text Label 3600 1500 2    60   ~ 0
+FCU1_1
+Text Label 4800 1500 0    60   ~ 0
+FCU1_2
+Text Label 3600 1600 2    60   ~ 0
+FCU2_1
+Text Label 4800 1600 0    60   ~ 0
+FCU2_2
+Text Label 3600 1700 2    60   ~ 0
+FCR1_1
+Text Label 4800 1700 0    60   ~ 0
+FCR1_2
+Text Label 3600 1800 2    60   ~ 0
+FDP1_1
+Text Label 4800 1800 0    60   ~ 0
+FDP1_2
+Text Label 3600 1900 2    60   ~ 0
+FDS1_1
+Text Label 4800 1900 0    60   ~ 0
+FDS1_2
+Text Label 3600 2000 2    60   ~ 0
+FDS2_1
+Text Label 4800 2000 0    60   ~ 0
+FDS2_2
+Text Label 3600 2100 2    60   ~ 0
+FDP3_1
+Text Label 4800 2100 0    60   ~ 0
+FDP3_2
+Text Label 3600 2200 2    60   ~ 0
+PT_1
+Text Label 4800 2200 0    60   ~ 0
+PT_2
+Text Label 3600 2300 2    60   ~ 0
+APB_1
+Text Label 4800 2300 0    60   ~ 0
+APB_2
+Text Label 3600 2400 2    60   ~ 0
+FPB_1
+Text Label 4800 2400 0    60   ~ 0
+FPB_2
+Text Label 3600 2500 2    60   ~ 0
+Lum_1
+Text Label 4800 2500 0    60   ~ 0
+Lum_2
+Text Label 3600 2600 2    60   ~ 0
+fDI_1
+Text Label 4800 2600 0    60   ~ 0
+fDI_2
+Text Label 3600 2700 2    60   ~ 0
+EDC3_1
+Text Label 4800 2700 0    60   ~ 0
+EDC3_2
+Text Label 3600 2800 2    60   ~ 0
+SUP_1
+Text Label 4800 2800 0    60   ~ 0
+SUP_2
+Text Label 3600 2900 2    60   ~ 0
+ECU_1
+Text Label 4800 2900 0    60   ~ 0
+ECU_2
+Text Label 3600 3000 2    60   ~ 0
+ECU_3
+Text Label 4800 3000 0    60   ~ 0
+ECR_1
+Text Label 3600 3100 2    60   ~ 0
+ECR_2
+Text Label 4800 3100 0    60   ~ 0
+ECR_3
+Text Label 3600 3200 2    60   ~ 0
+EDC1_1
+Text Label 4800 3200 0    60   ~ 0
+EDC1_2
+Text Label 3600 3300 2    60   ~ 0
+EDC2_1
+Text Label 4800 3300 0    60   ~ 0
+EDC2_2
+Text Label 3600 3400 2    60   ~ 0
+BI_1
+Text Label 4800 3400 0    60   ~ 0
+BI_2
+Text Label 3600 3500 2    60   ~ 0
+TRI_1
+Text Label 4800 3500 0    60   ~ 0
+TRI_2
+Wire Wire Line
+	3600 1300 3950 1300
+Wire Wire Line
+	3600 1400 3950 1400
+Wire Wire Line
+	3600 1500 3950 1500
+Wire Wire Line
+	3600 1600 3950 1600
+Wire Wire Line
+	3600 1700 3950 1700
+Wire Wire Line
+	3600 1800 3950 1800
+Wire Wire Line
+	3600 1900 3950 1900
+Wire Wire Line
+	3600 2000 3950 2000
+Wire Wire Line
+	3600 2100 3950 2100
+Wire Wire Line
+	3600 2200 3950 2200
+Wire Wire Line
+	3600 2300 3950 2300
+Wire Wire Line
+	3600 2400 3950 2400
+Wire Wire Line
+	3600 2500 3950 2500
+Wire Wire Line
+	3600 2600 3950 2600
+Wire Wire Line
+	3600 2700 3950 2700
+Wire Wire Line
+	3600 2800 3950 2800
+Wire Wire Line
+	3600 2900 3950 2900
+Wire Wire Line
+	3600 3000 3950 3000
+Wire Wire Line
+	3950 3100 3600 3100
+Wire Wire Line
+	3600 3200 3950 3200
+Wire Wire Line
+	3950 3300 3600 3300
+Wire Wire Line
+	3600 3400 3950 3400
+Wire Wire Line
+	3950 3500 3600 3500
+Wire Wire Line
+	4450 1300 4800 1300
+Wire Wire Line
+	4800 1400 4450 1400
+Wire Wire Line
+	4450 1500 4800 1500
+Wire Wire Line
+	4800 1600 4450 1600
+Wire Wire Line
+	4450 1700 4800 1700
+Wire Wire Line
+	4800 1800 4450 1800
+Wire Wire Line
+	4450 1900 4800 1900
+Wire Wire Line
+	4800 2000 4450 2000
+Wire Wire Line
+	4450 2100 4800 2100
+Wire Wire Line
+	4800 2200 4450 2200
+Wire Wire Line
+	4450 2300 4800 2300
+Wire Wire Line
+	4800 2400 4450 2400
+Wire Wire Line
+	4450 2500 4800 2500
+Wire Wire Line
+	4800 2600 4450 2600
+Wire Wire Line
+	4450 2700 4800 2700
+Wire Wire Line
+	4800 2800 4450 2800
+Wire Wire Line
+	4450 2900 4800 2900
+Wire Wire Line
+	4800 3000 4450 3000
+Wire Wire Line
+	4450 3100 4800 3100
+Wire Wire Line
+	4800 3200 4450 3200
+Wire Wire Line
+	4450 3300 4800 3300
+Wire Wire Line
+	4800 3400 4450 3400
+Wire Wire Line
+	4450 3500 4800 3500
+NoConn ~ 1950 1400
+NoConn ~ 1450 1400
+Text Label 950  1500 2    60   ~ 0
+FCR2_1
+Text Label 2450 1500 0    60   ~ 0
+FCR2_2
+Text Label 950  1600 2    60   ~ 0
+FCU1_1
+Text Label 2450 1600 0    60   ~ 0
+FCU1_2
+Text Label 950  1700 2    60   ~ 0
+FDP1_1
+Text Label 2450 1700 0    60   ~ 0
+FDP1_2
+Text Label 950  1800 2    60   ~ 0
+FDS1_1
+Text Label 2450 1800 0    60   ~ 0
+FDS1_2
+Text Label 950  1900 2    60   ~ 0
+FDP3_1
+Text Label 2450 1900 0    60   ~ 0
+FDP3_2
+Text Label 950  2000 2    60   ~ 0
+PT_1
+Text Label 2450 2000 0    60   ~ 0
+PT_2
+Text Label 950  2100 2    60   ~ 0
+APB_1
+Text Label 2450 2100 0    60   ~ 0
+APB_2
+Text Label 950  2200 2    60   ~ 0
+FPB_1
+Text Label 2450 2200 0    60   ~ 0
+FPB_2
+Text Label 950  2300 2    60   ~ 0
+Lum_1
+Text Label 2450 2300 0    60   ~ 0
+Lum_2
+Text Label 950  2400 2    60   ~ 0
+fDI_1
+Text Label 2450 2400 0    60   ~ 0
+fDI_2
+Text Label 950  2500 2    60   ~ 0
+SUP_1
+Text Label 2450 2500 0    60   ~ 0
+SUP_2
+Text Label 950  2600 2    60   ~ 0
+ECU_1
+Text Label 2450 2600 0    60   ~ 0
+ECU_2
+Text Label 950  2700 2    60   ~ 0
+ECR_2
+Text Label 2450 2700 0    60   ~ 0
+ECR_3
+Text Label 950  2800 2    60   ~ 0
+EDC1_1
+Text Label 2450 2800 0    60   ~ 0
+EDC1_2
+Text Label 950  2900 2    60   ~ 0
+BI_1
+Text Label 2450 2900 0    60   ~ 0
+BI_2
+Text Label 950  3000 2    60   ~ 0
+TRI_1
+Text Label 2450 3000 0    60   ~ 0
+TRI_2
+Wire Wire Line
+	950  1500 1450 1500
+Wire Wire Line
+	1450 1600 950  1600
+Wire Wire Line
+	950  1700 1450 1700
+Wire Wire Line
+	1450 1800 950  1800
+Wire Wire Line
+	950  1900 1450 1900
+Wire Wire Line
+	1450 2000 950  2000
+Wire Wire Line
+	950  2100 1450 2100
+Wire Wire Line
+	1450 2200 950  2200
+Wire Wire Line
+	950  2300 1450 2300
+Wire Wire Line
+	1450 2400 950  2400
+Wire Wire Line
+	950  2500 1450 2500
+Wire Wire Line
+	1450 2600 950  2600
+Wire Wire Line
+	950  2700 1450 2700
+Wire Wire Line
+	1450 2800 950  2800
+Wire Wire Line
+	950  2900 1450 2900
+Wire Wire Line
+	1450 3000 950  3000
+Wire Wire Line
+	1950 1500 2450 1500
+Wire Wire Line
+	1950 1600 2450 1600
+Wire Wire Line
+	2450 1700 1950 1700
+Wire Wire Line
+	1950 1800 2450 1800
+Wire Wire Line
+	2450 1900 1950 1900
+Wire Wire Line
+	1950 2000 2450 2000
+Wire Wire Line
+	2450 2100 1950 2100
+Wire Wire Line
+	1950 2200 2450 2200
+Wire Wire Line
+	2450 2300 1950 2300
+Wire Wire Line
+	1950 2400 2450 2400
+Wire Wire Line
+	2450 2500 1950 2500
+Wire Wire Line
+	1950 2600 2450 2600
+Wire Wire Line
+	1950 2700 2450 2700
+Wire Wire Line
+	2450 2800 1950 2800
+Wire Wire Line
+	1950 2900 2450 2900
+Wire Wire Line
+	2450 3000 1950 3000
+Text Notes 750  1150 0    120  ~ 0
+Omnetics Connector
+Text Notes 3400 1150 0    120  ~ 0
+Samtec Connector
+Text Notes 6100 2450 0    120  ~ 0
+No Connection
+Text Label 6000 2600 2    60   ~ 0
+FDP2_1
+Text Label 6000 2900 2    60   ~ 0
+FCR1_1
+Text Label 6000 2750 2    60   ~ 0
+FCU2_1
+Text Label 6000 3050 2    60   ~ 0
+FDS2_1
+Text Label 6000 3200 2    60   ~ 0
+EDC3_1
+Text Label 6000 3350 2    60   ~ 0
+ECU_3
+Text Label 7350 2600 0    60   ~ 0
+FDP2_2
+Text Label 7350 2900 0    60   ~ 0
+FCR1_2
+Text Label 7350 2750 0    60   ~ 0
+FCU2_2
+Text Label 7350 3050 0    60   ~ 0
+FDS2_2
+Text Label 7350 3200 0    60   ~ 0
+EDC3_2
+Text Label 7350 3350 0    60   ~ 0
+ECR_1
+Text Label 7350 3500 0    60   ~ 0
+EDC2_2
+Text Label 6000 3500 2    60   ~ 0
+EDC2_1
+NoConn ~ 6000 2600
+NoConn ~ 6000 2900
+NoConn ~ 6000 2750
+NoConn ~ 6000 3050
+NoConn ~ 6000 3200
+NoConn ~ 6000 3350
+NoConn ~ 6000 3500
+NoConn ~ 7350 2600
+NoConn ~ 7350 2900
+NoConn ~ 7350 2750
+NoConn ~ 7350 3050
+NoConn ~ 7350 3200
+NoConn ~ 7350 3350
+NoConn ~ 7350 3500
+Text Notes 6200 1200 0    120  ~ 0
+References
+$Comp
+L SamtecReferences U1
+U 1 1 5B8443C4
+P 6700 1950
+F 0 "U1" H 6700 2150 50  0000 C CNN
+F 1 "SamtecReferences" H 6700 2050 50  0000 C CNN
+F 2 "samtec:SamtecReferenceConnectors" H 6700 1950 120 0001 C CNN
+F 3 "" H 6700 1950 120 0001 C CNN
+	1    6700 1950
+	1    0    0    -1  
+$EndComp
+Text Label 6050 1500 2    60   ~ 0
+OmneticsRef
+Text Label 7250 1350 0    60   ~ 0
+SamtecRef1
+Text Label 7250 1450 0    60   ~ 0
+SamtecRef2
+Text Label 7250 1550 0    60   ~ 0
+SamtecRef3
+Text Label 7250 1650 0    60   ~ 0
+SamtecRef4
+Text Label 1450 3100 2    60   ~ 0
+OmneticsRef
+Text Label 3950 3600 2    60   ~ 0
+SamtecRef1
+Text Label 4450 3600 0    60   ~ 0
+SamtecRef2
+Text Label 3950 3700 2    60   ~ 0
+SamtecRef3
+Text Label 4450 3700 0    60   ~ 0
+SamtecRef4
+Text Notes 3550 850  0    240  ~ 0
+Every Muscle
+Text Notes 3900 4450 0    240  ~ 0
+All Flexors
+$Comp
+L Conn_02x25_Odd_Even J3
+U 1 1 5B844EEF
+P 1650 5950
+F 0 "J3" H 1700 7250 50  0000 C CNN
+F 1 "Conn_02x25_Odd_Even" H 1700 4650 50  0000 C CNN
+F 2 "samtec:FTSH-125-01-F-MT" H 1650 5950 50  0001 C CNN
+F 3 "" H 1650 5950 50  0001 C CNN
+	1    1650 5950
+	1    0    0    -1  
+$EndComp
+Text Label 1100 4750 2    60   ~ 0
+bFDP2_1
+Text Label 2300 4750 0    60   ~ 0
+bFDP2_2
+Text Label 1100 4850 2    60   ~ 0
+bFCR2_1
+Text Label 2300 4850 0    60   ~ 0
+bFCR2_2
+Text Label 1100 4950 2    60   ~ 0
+bFCU1_1
+Text Label 2300 4950 0    60   ~ 0
+bFCU1_2
+Text Label 1100 5050 2    60   ~ 0
+bFCU2_1
+Text Label 2300 5050 0    60   ~ 0
+bFCU2_2
+Text Label 1100 5150 2    60   ~ 0
+bFCR1_1
+Text Label 2300 5150 0    60   ~ 0
+bFCR1_2
+Text Label 1100 5250 2    60   ~ 0
+bFDP1_1
+Text Label 2300 5250 0    60   ~ 0
+bFDP1_2
+Text Label 1100 5350 2    60   ~ 0
+bFDS1_1
+Text Label 2300 5350 0    60   ~ 0
+bFDS1_2
+Text Label 1100 5450 2    60   ~ 0
+bFDS2_1
+Text Label 2300 5450 0    60   ~ 0
+bFDS2_2
+Text Label 1100 5550 2    60   ~ 0
+bFDP3_1
+Text Label 2300 5550 0    60   ~ 0
+bFDP3_2
+Text Label 1100 5650 2    60   ~ 0
+bPT_1
+Text Label 2300 5650 0    60   ~ 0
+bPT_2
+Text Label 1100 5750 2    60   ~ 0
+bAPB_1
+Text Label 2300 5750 0    60   ~ 0
+bAPB_2
+Text Label 1100 5850 2    60   ~ 0
+bFPB_1
+Text Label 2300 5850 0    60   ~ 0
+bFPB_2
+Text Label 1100 5950 2    60   ~ 0
+bLum_1
+Text Label 2300 5950 0    60   ~ 0
+bLum_2
+Text Label 1100 6050 2    60   ~ 0
+bfDI_1
+Text Label 2300 6050 0    60   ~ 0
+bfDI_2
+Text Label 1100 6150 2    60   ~ 0
+bEDC3_1
+Text Label 2300 6150 0    60   ~ 0
+bEDC3_2
+Text Label 1100 6250 2    60   ~ 0
+bSUP_1
+Text Label 2300 6250 0    60   ~ 0
+bSUP_2
+Text Label 1100 6350 2    60   ~ 0
+bECU_1
+Text Label 2300 6350 0    60   ~ 0
+bECU_2
+Text Label 1100 6450 2    60   ~ 0
+bECU_3
+Text Label 2300 6450 0    60   ~ 0
+bECR_1
+Text Label 1100 6550 2    60   ~ 0
+bECR_2
+Text Label 2300 6550 0    60   ~ 0
+bECR_3
+Text Label 1100 6650 2    60   ~ 0
+bEDC1_1
+Text Label 2300 6650 0    60   ~ 0
+bEDC1_2
+Text Label 1100 6750 2    60   ~ 0
+bEDC2_1
+Text Label 2300 6750 0    60   ~ 0
+bEDC2_2
+Text Label 1100 6850 2    60   ~ 0
+bBI_1
+Text Label 2300 6850 0    60   ~ 0
+bBI_2
+Text Label 1100 6950 2    60   ~ 0
+bTRI_1
+Text Label 2300 6950 0    60   ~ 0
+bTRI_2
+Wire Wire Line
+	1100 4750 1450 4750
+Wire Wire Line
+	1100 4850 1450 4850
+Wire Wire Line
+	1100 4950 1450 4950
+Wire Wire Line
+	1100 5050 1450 5050
+Wire Wire Line
+	1100 5150 1450 5150
+Wire Wire Line
+	1100 5250 1450 5250
+Wire Wire Line
+	1100 5350 1450 5350
+Wire Wire Line
+	1100 5450 1450 5450
+Wire Wire Line
+	1100 5550 1450 5550
+Wire Wire Line
+	1100 5650 1450 5650
+Wire Wire Line
+	1100 5750 1450 5750
+Wire Wire Line
+	1100 5850 1450 5850
+Wire Wire Line
+	1100 5950 1450 5950
+Wire Wire Line
+	1100 6050 1450 6050
+Wire Wire Line
+	1100 6150 1450 6150
+Wire Wire Line
+	1100 6250 1450 6250
+Wire Wire Line
+	1100 6350 1450 6350
+Wire Wire Line
+	1100 6450 1450 6450
+Wire Wire Line
+	1450 6550 1100 6550
+Wire Wire Line
+	1100 6650 1450 6650
+Wire Wire Line
+	1450 6750 1100 6750
+Wire Wire Line
+	1100 6850 1450 6850
+Wire Wire Line
+	1450 6950 1100 6950
+Wire Wire Line
+	1950 4750 2300 4750
+Wire Wire Line
+	2300 4850 1950 4850
+Wire Wire Line
+	1950 4950 2300 4950
+Wire Wire Line
+	2300 5050 1950 5050
+Wire Wire Line
+	1950 5150 2300 5150
+Wire Wire Line
+	2300 5250 1950 5250
+Wire Wire Line
+	1950 5350 2300 5350
+Wire Wire Line
+	2300 5450 1950 5450
+Wire Wire Line
+	1950 5550 2300 5550
+Wire Wire Line
+	2300 5650 1950 5650
+Wire Wire Line
+	1950 5750 2300 5750
+Wire Wire Line
+	2300 5850 1950 5850
+Wire Wire Line
+	1950 5950 2300 5950
+Wire Wire Line
+	2300 6050 1950 6050
+Wire Wire Line
+	1950 6150 2300 6150
+Wire Wire Line
+	2300 6250 1950 6250
+Wire Wire Line
+	1950 6350 2300 6350
+Wire Wire Line
+	2300 6450 1950 6450
+Wire Wire Line
+	1950 6550 2300 6550
+Wire Wire Line
+	2300 6650 1950 6650
+Wire Wire Line
+	1950 6750 2300 6750
+Wire Wire Line
+	2300 6850 1950 6850
+Wire Wire Line
+	1950 6950 2300 6950
+Text Notes 900  4600 0    120  ~ 0
+Samtec Connector
+Text Label 1450 7050 2    60   ~ 0
+bSamtecRef1
+Text Label 1950 7050 0    60   ~ 0
+bSamtecRef2
+Text Label 1450 7150 2    60   ~ 0
+bSamtecRef3
+Text Label 1950 7150 0    60   ~ 0
+bSamtecRef4
+$Comp
+L Conn_02x18_Odd_Even J4
+U 1 1 5B844F79
+P 4100 5850
+F 0 "J4" H 4150 6750 50  0000 C CNN
+F 1 "Conn_02x18_Odd_Even" H 4150 4850 50  0000 C CNN
+F 2 "OmneticsConnector:Intan_RHD2132_Converter" H 4100 5850 50  0001 C CNN
+F 3 "" H 4100 5850 50  0001 C CNN
+	1    4100 5850
+	1    0    0    -1  
+$EndComp
+NoConn ~ 4400 5050
+NoConn ~ 3900 5050
+Text Label 3400 5150 2    60   ~ 0
+bFDP2_1
+Text Label 4900 5150 0    60   ~ 0
+bFDP2_2
+Text Label 3400 5250 2    60   ~ 0
+bFCR2_1
+Text Label 4900 5250 0    60   ~ 0
+bFCR2_2
+Text Label 3400 5350 2    60   ~ 0
+bFCU1_1
+Text Label 4900 5350 0    60   ~ 0
+bFCU1_2
+Text Label 3400 5450 2    60   ~ 0
+bFCU2_1
+Text Label 4900 5450 0    60   ~ 0
+bFCU2_2
+Text Label 3400 5550 2    60   ~ 0
+bFCR1_1
+Text Label 4900 5550 0    60   ~ 0
+bFCR1_2
+Text Label 3400 5650 2    60   ~ 0
+bFDP1_1
+Text Label 4900 5650 0    60   ~ 0
+bFDP1_2
+Text Label 3400 5750 2    60   ~ 0
+bFDS1_1
+Text Label 4900 5750 0    60   ~ 0
+bFDS1_2
+Text Label 3400 5850 2    60   ~ 0
+bFDS2_1
+Text Label 4900 5850 0    60   ~ 0
+bFDS2_2
+Text Label 3400 5950 2    60   ~ 0
+bFDP3_1
+Text Label 4900 5950 0    60   ~ 0
+bFDP3_2
+Text Label 3400 6050 2    60   ~ 0
+bAPB_1
+Text Label 4900 6050 0    60   ~ 0
+bAPB_2
+Text Label 3400 6150 2    60   ~ 0
+bFPB_1
+Text Label 4900 6150 0    60   ~ 0
+bFPB_2
+Text Label 3400 6250 2    60   ~ 0
+bLum_1
+Text Label 4900 6250 0    60   ~ 0
+bLum_2
+Text Label 3400 6350 2    60   ~ 0
+bECU_1
+Text Label 4900 6350 0    60   ~ 0
+bECU_2
+Text Label 3400 6450 2    60   ~ 0
+bECR_2
+Text Label 4900 6450 0    60   ~ 0
+bECR_3
+Text Label 3400 6550 2    60   ~ 0
+bEDC1_1
+Text Label 4900 6550 0    60   ~ 0
+bEDC1_2
+Text Label 3400 6650 2    60   ~ 0
+bEDC2_1
+Text Label 4900 6650 0    60   ~ 0
+bEDC2_2
+Wire Wire Line
+	3400 5150 3900 5150
+Wire Wire Line
+	3900 5250 3400 5250
+Wire Wire Line
+	3400 5350 3900 5350
+Wire Wire Line
+	3900 5450 3400 5450
+Wire Wire Line
+	3400 5550 3900 5550
+Wire Wire Line
+	3900 5650 3400 5650
+Wire Wire Line
+	3400 5750 3900 5750
+Wire Wire Line
+	3900 5850 3400 5850
+Wire Wire Line
+	3400 5950 3900 5950
+Wire Wire Line
+	3900 6050 3400 6050
+Wire Wire Line
+	3400 6150 3900 6150
+Wire Wire Line
+	3900 6250 3400 6250
+Wire Wire Line
+	3400 6350 3900 6350
+Wire Wire Line
+	3900 6450 3400 6450
+Wire Wire Line
+	3400 6550 3900 6550
+Wire Wire Line
+	3900 6650 3400 6650
+Wire Wire Line
+	4400 5150 4900 5150
+Wire Wire Line
+	4400 5250 4900 5250
+Wire Wire Line
+	4900 5350 4400 5350
+Wire Wire Line
+	4400 5450 4900 5450
+Wire Wire Line
+	4900 5550 4400 5550
+Wire Wire Line
+	4400 5650 4900 5650
+Wire Wire Line
+	4900 5750 4400 5750
+Wire Wire Line
+	4400 5850 4900 5850
+Wire Wire Line
+	4900 5950 4400 5950
+Wire Wire Line
+	4400 6050 4900 6050
+Wire Wire Line
+	4900 6150 4400 6150
+Wire Wire Line
+	4400 6250 4900 6250
+Wire Wire Line
+	4400 6350 4900 6350
+Wire Wire Line
+	4900 6450 4400 6450
+Wire Wire Line
+	4400 6550 4900 6550
+Wire Wire Line
+	4900 6650 4400 6650
+Text Notes 3200 4800 0    120  ~ 0
+Omnetics Connector
+Text Label 3900 6750 2    60   ~ 0
+bOmneticsRef
+Text Notes 6450 4750 0    120  ~ 0
+References
+$Comp
+L SamtecReferences U2
+U 1 1 5B844FFD
+P 6950 5500
+F 0 "U2" H 6950 5700 50  0000 C CNN
+F 1 "SamtecReferences" H 6950 5600 50  0000 C CNN
+F 2 "samtec:SamtecReferenceConnectors" H 6950 5500 120 0001 C CNN
+F 3 "" H 6950 5500 120 0001 C CNN
+	1    6950 5500
+	1    0    0    -1  
+$EndComp
+Text Label 6300 5050 2    60   ~ 0
+bOmneticsRef
+Text Label 7500 4900 0    60   ~ 0
+bSamtecRef1
+Text Label 7500 5000 0    60   ~ 0
+bSamtecRef2
+Text Label 7500 5100 0    60   ~ 0
+bSamtecRef3
+Text Label 7500 5200 0    60   ~ 0
+bSamtecRef4
+Text Notes 6300 6100 0    120  ~ 0
+No Connection
+NoConn ~ 6550 6400
+NoConn ~ 6550 6500
+NoConn ~ 6550 6600
+NoConn ~ 6550 6700
+NoConn ~ 6550 6800
+NoConn ~ 6550 6900
+NoConn ~ 6550 7000
+NoConn ~ 7300 6400
+NoConn ~ 7300 6500
+NoConn ~ 7300 6600
+NoConn ~ 7300 6700
+NoConn ~ 7300 6800
+NoConn ~ 7300 6900
+NoConn ~ 7300 7000
+Text Label 6550 6400 2    60   ~ 0
+bPT_1
+Text Label 7300 6400 0    60   ~ 0
+bPT_2
+Text Label 6550 6500 2    60   ~ 0
+bfDI_1
+Text Label 7300 6500 0    60   ~ 0
+bfDI_2
+Text Label 6550 6600 2    60   ~ 0
+bEDC3_1
+Text Label 7300 6600 0    60   ~ 0
+bEDC3_2
+Text Label 6550 6700 2    60   ~ 0
+bSUP_1
+Text Label 7300 6700 0    60   ~ 0
+bSUP_2
+Text Label 6550 6800 2    60   ~ 0
+bECU_3
+Text Label 7300 6800 0    60   ~ 0
+bECR_1
+Text Label 6550 6900 2    60   ~ 0
+bBI_1
+Text Label 7300 6900 0    60   ~ 0
+bBI_2
+Text Label 6550 7000 2    60   ~ 0
+bTRI_1
+Text Label 7300 7000 0    60   ~ 0
+bTRI_2
+NoConn ~ 4400 6750
+NoConn ~ 1950 3100
+Text Notes 2900 7600 0    240  ~ 0
+Flexible Connector
+$Comp
+L Conn_02x25_Odd_Even J5
+U 1 1 5BCDFC7A
+P 1700 9100
+F 0 "J5" H 1750 10400 50  0000 C CNN
+F 1 "Conn_02x25_Odd_Even" H 1750 7800 50  0000 C CNN
+F 2 "samtec:FTSH-125-01-F-MT" H 1700 9100 50  0001 C CNN
+F 3 "" H 1700 9100 50  0001 C CNN
+	1    1700 9100
+	1    0    0    -1  
+$EndComp
+Text Label 1150 7900 2    60   ~ 0
+cFDP2_1
+Text Label 2350 7900 0    60   ~ 0
+cFDP2_2
+Text Label 1150 8000 2    60   ~ 0
+cFCR2_1
+Text Label 2350 8000 0    60   ~ 0
+cFCR2_2
+Text Label 1150 8100 2    60   ~ 0
+cFCU1_1
+Text Label 2350 8100 0    60   ~ 0
+cFCU1_2
+Text Label 1150 8200 2    60   ~ 0
+cFCU2_1
+Text Label 2350 8200 0    60   ~ 0
+cFCU2_2
+Text Label 1150 8300 2    60   ~ 0
+cFCR1_1
+Text Label 2350 8300 0    60   ~ 0
+cFCR1_2
+Text Label 1150 8400 2    60   ~ 0
+cFDP1_1
+Text Label 2350 8400 0    60   ~ 0
+cFDP1_2
+Text Label 1150 8500 2    60   ~ 0
+cFDS1_1
+Text Label 2350 8500 0    60   ~ 0
+cFDS1_2
+Text Label 1150 8600 2    60   ~ 0
+cFDS2_1
+Text Label 2350 8600 0    60   ~ 0
+cFDS2_2
+Text Label 1150 8700 2    60   ~ 0
+cFDP3_1
+Text Label 2350 8700 0    60   ~ 0
+cFDP3_2
+Text Label 1150 8800 2    60   ~ 0
+cPT_1
+Text Label 2350 8800 0    60   ~ 0
+cPT_2
+Text Label 1150 8900 2    60   ~ 0
+cAPB_1
+Text Label 2350 8900 0    60   ~ 0
+cAPB_2
+Text Label 1150 9000 2    60   ~ 0
+cFPB_1
+Text Label 2350 9000 0    60   ~ 0
+cFPB_2
+Text Label 1150 9100 2    60   ~ 0
+cLum_1
+Text Label 2350 9100 0    60   ~ 0
+cLum_2
+Text Label 1150 9200 2    60   ~ 0
+cfDI_1
+Text Label 2350 9200 0    60   ~ 0
+cfDI_2
+Text Label 1150 9300 2    60   ~ 0
+cEDC3_1
+Text Label 2350 9300 0    60   ~ 0
+cEDC3_2
+Text Label 1150 9400 2    60   ~ 0
+cSUP_1
+Text Label 2350 9400 0    60   ~ 0
+cSUP_2
+Text Label 1150 9500 2    60   ~ 0
+cECU_1
+Text Label 2350 9500 0    60   ~ 0
+cECU_2
+Text Label 1150 9600 2    60   ~ 0
+cECU_3
+Text Label 2350 9600 0    60   ~ 0
+cECR_1
+Text Label 1150 9700 2    60   ~ 0
+cECR_2
+Text Label 2350 9700 0    60   ~ 0
+cECR_3
+Text Label 1150 9800 2    60   ~ 0
+cEDC1_1
+Text Label 2350 9800 0    60   ~ 0
+cEDC1_2
+Text Label 1150 9900 2    60   ~ 0
+cEDC2_1
+Text Label 2350 9900 0    60   ~ 0
+cEDC2_2
+Text Label 1150 10000 2    60   ~ 0
+cBI_1
+Text Label 2350 10000 0    60   ~ 0
+cBI_2
+Text Label 1150 10100 2    60   ~ 0
+cTRI_1
+Text Label 2350 10100 0    60   ~ 0
+cTRI_2
+Wire Wire Line
+	1150 7900 1500 7900
+Wire Wire Line
+	1150 8000 1500 8000
+Wire Wire Line
+	1150 8100 1500 8100
+Wire Wire Line
+	1150 8200 1500 8200
+Wire Wire Line
+	1150 8300 1500 8300
+Wire Wire Line
+	1150 8400 1500 8400
+Wire Wire Line
+	1150 8500 1500 8500
+Wire Wire Line
+	1150 8600 1500 8600
+Wire Wire Line
+	1150 8700 1500 8700
+Wire Wire Line
+	1150 8800 1500 8800
+Wire Wire Line
+	1150 8900 1500 8900
+Wire Wire Line
+	1150 9000 1500 9000
+Wire Wire Line
+	1150 9100 1500 9100
+Wire Wire Line
+	1150 9200 1500 9200
+Wire Wire Line
+	1150 9300 1500 9300
+Wire Wire Line
+	1150 9400 1500 9400
+Wire Wire Line
+	1150 9500 1500 9500
+Wire Wire Line
+	1150 9600 1500 9600
+Wire Wire Line
+	1500 9700 1150 9700
+Wire Wire Line
+	1150 9800 1500 9800
+Wire Wire Line
+	1500 9900 1150 9900
+Wire Wire Line
+	1150 10000 1500 10000
+Wire Wire Line
+	1500 10100 1150 10100
+Wire Wire Line
+	2000 7900 2350 7900
+Wire Wire Line
+	2350 8000 2000 8000
+Wire Wire Line
+	2000 8100 2350 8100
+Wire Wire Line
+	2350 8200 2000 8200
+Wire Wire Line
+	2000 8300 2350 8300
+Wire Wire Line
+	2350 8400 2000 8400
+Wire Wire Line
+	2000 8500 2350 8500
+Wire Wire Line
+	2350 8600 2000 8600
+Wire Wire Line
+	2000 8700 2350 8700
+Wire Wire Line
+	2350 8800 2000 8800
+Wire Wire Line
+	2000 8900 2350 8900
+Wire Wire Line
+	2350 9000 2000 9000
+Wire Wire Line
+	2000 9100 2350 9100
+Wire Wire Line
+	2350 9200 2000 9200
+Wire Wire Line
+	2000 9300 2350 9300
+Wire Wire Line
+	2350 9400 2000 9400
+Wire Wire Line
+	2000 9500 2350 9500
+Wire Wire Line
+	2350 9600 2000 9600
+Wire Wire Line
+	2000 9700 2350 9700
+Wire Wire Line
+	2350 9800 2000 9800
+Wire Wire Line
+	2000 9900 2350 9900
+Wire Wire Line
+	2350 10000 2000 10000
+Wire Wire Line
+	2000 10100 2350 10100
+Text Notes 950  7750 0    120  ~ 0
+Samtec Connector
+Text Label 1500 10200 2    60   ~ 0
+cSamtecRef1
+Text Label 2000 10200 0    60   ~ 0
+cSamtecRef2
+Text Label 1500 10300 2    60   ~ 0
+cSamtecRef3
+Text Label 2000 10300 0    60   ~ 0
+cSamtecRef4
+$Comp
+L Conn_02x18_Odd_Even J6
+U 1 1 5BCDFCE1
+P 4150 9000
+F 0 "J6" H 4200 9900 50  0000 C CNN
+F 1 "Conn_02x18_Odd_Even" H 4200 8000 50  0000 C CNN
+F 2 "OmneticsConnector:Intan_RHD2132_Converter" H 4150 9000 50  0001 C CNN
+F 3 "" H 4150 9000 50  0001 C CNN
+	1    4150 9000
+	1    0    0    -1  
+$EndComp
+NoConn ~ 4450 8200
+NoConn ~ 3950 8200
+Wire Wire Line
+	3450 8300 3950 8300
+Wire Wire Line
+	3950 8400 3450 8400
+Wire Wire Line
+	3450 8500 3950 8500
+Wire Wire Line
+	3950 8600 3450 8600
+Wire Wire Line
+	3450 8700 3950 8700
+Wire Wire Line
+	3950 8800 3450 8800
+Wire Wire Line
+	3450 8900 3950 8900
+Wire Wire Line
+	3950 9000 3450 9000
+Wire Wire Line
+	3450 9100 3950 9100
+Wire Wire Line
+	3950 9200 3450 9200
+Wire Wire Line
+	3450 9300 3950 9300
+Wire Wire Line
+	3950 9400 3450 9400
+Wire Wire Line
+	3450 9500 3950 9500
+Wire Wire Line
+	3950 9600 3450 9600
+Wire Wire Line
+	3450 9700 3950 9700
+Wire Wire Line
+	3950 9800 3450 9800
+Wire Wire Line
+	4450 8300 4950 8300
+Wire Wire Line
+	4450 8400 4950 8400
+Wire Wire Line
+	4950 8500 4450 8500
+Wire Wire Line
+	4450 8600 4950 8600
+Wire Wire Line
+	4950 8700 4450 8700
+Wire Wire Line
+	4450 8800 4950 8800
+Wire Wire Line
+	4950 8900 4450 8900
+Wire Wire Line
+	4450 9000 4950 9000
+Wire Wire Line
+	4950 9100 4450 9100
+Wire Wire Line
+	4450 9200 4950 9200
+Wire Wire Line
+	4950 9300 4450 9300
+Wire Wire Line
+	4450 9400 4950 9400
+Wire Wire Line
+	4450 9500 4950 9500
+Wire Wire Line
+	4950 9600 4450 9600
+Wire Wire Line
+	4450 9700 4950 9700
+Wire Wire Line
+	4950 9800 4450 9800
+Text Notes 3250 7950 0    120  ~ 0
+Omnetics Connector
+Text Notes 6500 7900 0    120  ~ 0
+References
+$Comp
+L SamtecReferences U3
+U 1 1 5BCDFD2C
+P 7000 8650
+F 0 "U3" H 7000 8850 50  0000 C CNN
+F 1 "SamtecReferences" H 7000 8750 50  0000 C CNN
+F 2 "samtec:SamtecReferenceConnectors" H 7000 8650 120 0001 C CNN
+F 3 "" H 7000 8650 120 0001 C CNN
+	1    7000 8650
+	1    0    0    -1  
+$EndComp
+Text Label 6350 8200 2    60   ~ 0
+cOmneticsRef
+Text Label 7550 8050 0    60   ~ 0
+cSamtecRef1
+Text Label 7550 8150 0    60   ~ 0
+cSamtecRef2
+Text Label 7550 8250 0    60   ~ 0
+cSamtecRef3
+Text Label 7550 8350 0    60   ~ 0
+cSamtecRef4
+Text Notes 8850 7950 0    120  ~ 0
+No Connection
+NoConn ~ 4450 9900
+Text Label 9000 8100 2    60   ~ 0
+cFDP2_1
+Text Label 9000 8200 2    60   ~ 0
+cFCR2_1
+Text Label 9000 8300 2    60   ~ 0
+cFCU1_1
+Text Label 9000 8400 2    60   ~ 0
+cFCU2_1
+Text Label 9000 8500 2    60   ~ 0
+cFCR1_1
+Text Label 9000 8600 2    60   ~ 0
+cFDP1_1
+Text Label 9000 8700 2    60   ~ 0
+cFDS1_1
+Text Label 9000 8800 2    60   ~ 0
+cFDS2_1
+Text Label 9000 8900 2    60   ~ 0
+cFDP3_1
+Text Label 9000 9000 2    60   ~ 0
+cPT_1
+Text Label 9000 9100 2    60   ~ 0
+cAPB_1
+Text Label 9000 9200 2    60   ~ 0
+cFPB_1
+Text Label 9000 9300 2    60   ~ 0
+cLum_1
+Text Label 9000 9400 2    60   ~ 0
+cfDI_1
+Text Label 9000 9500 2    60   ~ 0
+cEDC3_1
+Text Label 9000 9600 2    60   ~ 0
+cSUP_1
+Text Label 9000 9700 2    60   ~ 0
+cECU_1
+Text Label 9000 9800 2    60   ~ 0
+cECU_3
+Text Label 9000 9900 2    60   ~ 0
+cECR_2
+Text Label 9000 10000 2    60   ~ 0
+cEDC1_1
+Text Label 9000 10100 2    60   ~ 0
+cEDC2_1
+Text Label 9000 10200 2    60   ~ 0
+cBI_1
+Text Label 9000 10300 2    60   ~ 0
+cTRI_1
+Text Label 10050 8100 0    60   ~ 0
+cFDP2_2
+Text Label 10050 8200 0    60   ~ 0
+cFCR2_2
+Text Label 10050 8300 0    60   ~ 0
+cFCU1_2
+Text Label 10050 8400 0    60   ~ 0
+cFCU2_2
+Text Label 10050 8500 0    60   ~ 0
+cFCR1_2
+Text Label 10050 8600 0    60   ~ 0
+cFDP1_2
+Text Label 10050 8700 0    60   ~ 0
+cFDS1_2
+Text Label 10050 8800 0    60   ~ 0
+cFDS2_2
+Text Label 10050 8900 0    60   ~ 0
+cFDP3_2
+Text Label 10050 9000 0    60   ~ 0
+cPT_2
+Text Label 10050 9100 0    60   ~ 0
+cAPB_2
+Text Label 10050 9200 0    60   ~ 0
+cFPB_2
+Text Label 10050 9300 0    60   ~ 0
+cLum_2
+Text Label 10050 9400 0    60   ~ 0
+cfDI_2
+Text Label 10050 9500 0    60   ~ 0
+cEDC3_2
+Text Label 10050 9600 0    60   ~ 0
+cSUP_2
+Text Label 10050 9700 0    60   ~ 0
+cECU_2
+Text Label 10050 9800 0    60   ~ 0
+cECR_1
+Text Label 10050 9900 0    60   ~ 0
+cECR_3
+Text Label 10050 10000 0    60   ~ 0
+cEDC1_2
+Text Label 10050 10100 0    60   ~ 0
+cEDC2_2
+Text Label 10050 10200 0    60   ~ 0
+cBI_2
+Text Label 10050 10300 0    60   ~ 0
+cTRI_2
+NoConn ~ 9000 8100
+NoConn ~ 9000 8200
+NoConn ~ 9000 8300
+NoConn ~ 9000 8400
+NoConn ~ 9000 8500
+NoConn ~ 9000 8600
+NoConn ~ 9000 8700
+NoConn ~ 9000 8800
+NoConn ~ 9000 8900
+NoConn ~ 9000 9000
+NoConn ~ 9000 9100
+NoConn ~ 9000 9200
+NoConn ~ 9000 9300
+NoConn ~ 9000 9400
+NoConn ~ 9000 9500
+NoConn ~ 9000 9600
+NoConn ~ 9000 9700
+NoConn ~ 9000 9800
+NoConn ~ 9000 9900
+NoConn ~ 9000 10000
+NoConn ~ 9000 10100
+NoConn ~ 9000 10200
+NoConn ~ 9000 10300
+NoConn ~ 10050 8100
+NoConn ~ 10050 8200
+NoConn ~ 10050 8300
+NoConn ~ 10050 8400
+NoConn ~ 10050 8500
+NoConn ~ 10050 8600
+NoConn ~ 10050 8700
+NoConn ~ 10050 8800
+NoConn ~ 10050 8900
+NoConn ~ 10050 9000
+NoConn ~ 10050 9100
+NoConn ~ 10050 9200
+NoConn ~ 10050 9300
+NoConn ~ 10050 9400
+NoConn ~ 10050 9500
+NoConn ~ 10050 9600
+NoConn ~ 10050 9700
+NoConn ~ 10050 9800
+NoConn ~ 10050 9900
+NoConn ~ 10050 10000
+NoConn ~ 10050 10100
+NoConn ~ 10050 10200
+NoConn ~ 10050 10300
+NoConn ~ 3450 8300
+NoConn ~ 3450 8400
+NoConn ~ 3450 8500
+NoConn ~ 3450 8600
+NoConn ~ 3450 8700
+NoConn ~ 3450 8800
+NoConn ~ 3450 8900
+NoConn ~ 3450 9000
+NoConn ~ 3450 9100
+NoConn ~ 3450 9200
+NoConn ~ 3450 9300
+NoConn ~ 3450 9400
+NoConn ~ 3450 9500
+NoConn ~ 3450 9600
+NoConn ~ 3450 9700
+NoConn ~ 3450 9800
+NoConn ~ 4950 8300
+NoConn ~ 4950 8400
+NoConn ~ 4950 8500
+NoConn ~ 4950 8600
+NoConn ~ 4950 8700
+NoConn ~ 4950 8800
+NoConn ~ 4950 8900
+NoConn ~ 4950 9000
+NoConn ~ 4950 9100
+NoConn ~ 4950 9200
+NoConn ~ 4950 9300
+NoConn ~ 4950 9400
+NoConn ~ 4950 9500
+NoConn ~ 4950 9600
+NoConn ~ 4950 9700
+NoConn ~ 4950 9800
+Text Label 3950 9900 2    60   ~ 0
+cOmneticsRef
+$EndSCHEMATC
