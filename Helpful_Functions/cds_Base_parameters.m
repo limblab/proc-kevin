@@ -47,7 +47,7 @@ array_names = 'rightM1';
 
 %% Add to a cds object
 cds = commonDataStructure;
-file =  'C:\Users\klb807\Documents\Data\ForAlessandro\03-21-11\Jaco_03-21-11_003.nev';
+file =  '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\User_folders\Kevin\ForAlessandro\01-17-11\Jaco_01-17-11_002.nev';%,'Z:\limblab\User_folders\Kevin\ForAlessandro\03-09-11\Jaco_03-09-11_002.nev';
 
 
 
