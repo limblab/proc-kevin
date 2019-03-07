@@ -68,7 +68,7 @@ clear ts elec spikes timeEdges
 %% clean up EMGs as needed
 if hasEMG
     [highB,highA] = butter(2,100/emgStruct.MetaTags.SamplingFreq,'high');
-    [lowB,lowA] = butter(2,20/emgStruct.metaTags.SamplingFreq,'high');
+    [lowB,lowA] = butter(2,20/emgStruct.metaTags.SamplingFreq,'low');
     corrEMGs = zeros(size(emgStruct.Data));
     for ii = 1:size(tempEMGs,1)
         corrEMGs(ii,:) = filtfilt(lowB,lowA,abs(filtfilt(highB,highA,...
@@ -174,6 +174,89 @@ for ii = 60:180 % just two minutes for the moment
     cortSP.XTickLabel = {num2str(outTs(ii))};
     hold on
     plot(cortSP,[100,100],[1,length(numElecs)],'r:');
+    
+    % find the current time in the associated video, correcting for skips
+    for jj = 1:length(vidSP)
+        [~,currFrame] = min(abs(tsFiles{jj}-outTs(ii)));
+        vidObj{jj}.CurrentTime = currFrame/30;
+        currFrame = readFrame(vidObj{jj});
+        imshow(currFrame(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
+    end
+    
+    frame = getframe(f);
+    writeVideo(outVid,frame);
+    
+    if mod(outTs(ii),1) == 0
+        disp(['Converting t = ',num2str(outTs(ii))]);
+    end
+
+end
+
+
+close(outVid);
+disp('Finished converting')
+
+
+
+
+%% A kludgy copy of the one above for a messy import of intan files.
+% we'll change this in the future to just import cds and TD rather than
+% fucking with direct imports of nev and other files. 
+
+f = figure;
+set(f,'Position',get(0,'Screensize'));
+
+
+% timestamps for the output video
+outTs = 0:1/30:spikeDuration;
+
+% cortical and possibly EMG on the left, any videos on the right
+% the organization is a little kludgy, but it's the best I have come up
+% with.
+cortSP = subplot(2,2,1);
+emgSP = subplot(2,2,3);
+vidSP{1} = subplot(2,2,2);
+vidSP{2} = subplot(2,2,4);
+
+colormap(cortSP,1-gray)
+cortSP.TickDir = 'out';
+emgSP.TickDir = 'out';
+set(f,'Visible','off');
+% clip off the first and last 2 seconds
+disp('starting to convert video')
+for ii = 60:4000 % just two minutes for the moment
+    
+%     keyboard
+    cortFrame = binnedSpikes(:,(int32(outTs(ii)*1000-100):int32(outTs(ii)*1000+400)));
+    imagesc(cortFrame,'Parent',cortSP)
+    cortSP.XTick = [100];
+    cortSP.XTickLabel = {num2str(outTs(ii))};
+    cortSP.YTick = [];
+    cortSP.Box = 'off';
+    xlabel(cortSP,'Time (s)');
+    cortSP.NextPlot = 'add';
+    plot(cortSP,[100,100],[1,length(numElecs)],'r:','LineWidth',2);
+    cortSP.NextPlot = 'replace';
+    
+    plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2);
+    emgSP.NextPlot = 'add';
+    for jj = 1:numel(EMGs)
+        [~,winBegin] = min(abs(EMGs(jj).bin_times-(outTs(ii)-.1)));
+        [~,winEnd] = min(abs(EMGs(jj).bin_times-(outTs(ii)+.4)));
+        plot(emgSP,EMGs(jj).bin_times(winBegin:winEnd),EMGs(jj).bin_data(winBegin:winEnd))
+    end
+    legend(emgSP,{EMGs.label})
+    emgSP.XTick = outTs(ii);
+    emgSP.XTickLabel = {num2str(outTs(ii))};
+    emgSP.Box = 'off';
+    emgSP.YLim = [-0.2 1.2];
+    emgSP.XLim = [outTs(ii)-.1,outTs(ii)+.4];
+    emgSP.TickDir = 'out';
+    emgSP.YTick = [];
+    xlabel(emgSP,'Time (s)');
+    emgSP.NextPlot = 'replace';
+    
+    
     
     % find the current time in the associated video, correcting for skips
     for jj = 1:length(vidSP)
