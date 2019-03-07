@@ -17,8 +17,14 @@ end
 [filename,pathname] = uigetfile({'*.nev'},'Select a .nev file');
 nevFullPath = [pathname,filename];
 
-outVidFullPath = strsplit(nevFullPath,'.nev');
-outVidFullPath = [outVidFullPath{1},'.avi'];
+% % rather than output to video we'll output to some files
+% so that we can just use ffmpeg.
+outVidPath = strsplit(nevFullPath,'.nev');
+outputFolder = [outVidPath{1},'_mergedVideo'];
+mkdir(outputFolder)
+clear outVidPath % I don't like having temp variables sitting around
+% outVidFullPath = strsplit(nevFullPath,'.nev');
+% outVidFullPath = [outVidFullPath{1},'.avi'];
 
 hasEMG = false;
 [filename,pathname] = uigetfile({'*.ns2;*.ns3','Blackrock Files';...
@@ -37,10 +43,7 @@ for ii = 1:numel(vidObj)
     vidObj{ii} = VideoReader(videoFullPath{ii}); % open the video to read
 end
 
-% video to store
-outVid = VideoWriter(outVidFullPath); % open the video to write
-outVid.FrameRate = 30;
-open(outVid);
+
 
 if hasEMG
     emgStruct = openNSx(emgFullPath,'read');
@@ -172,8 +175,37 @@ for ii = 60:180 % just two minutes for the moment
     imagesc(cortFrame,'Parent',cortSP)
     cortSP.XTick = [100];
     cortSP.XTickLabel = {num2str(outTs(ii))};
-    hold on
-    plot(cortSP,[100,100],[1,length(numElecs)],'r:');
+    cortSP.YTick = [];
+    cortSP.Box = 'off';
+    xlabel(cortSP,'Time (s)');
+    cortSP.NextPlot = 'add';
+    plot(cortSP,[100,100],[1,length(numElecs)],'r:','LineWidth',2);
+    cortSP.NextPlot = 'replace';
+    
+    
+    if hasEMG
+        cla(emgSP)
+        emgSP.NextPlot = 'add';
+        for jj = 1:numel(EMGs)
+            [~,winBegin] = min(abs(EMGs(jj).bin_times-(outTs(ii)-.1)));
+            [~,winEnd] = min(abs(EMGs(jj).bin_times-(outTs(ii)+.4)));
+            plot(emgSP,EMGs(jj).bin_times(winBegin:winEnd),EMGs(jj).bin_data(winBegin:winEnd))
+        end
+        legend(emgSP,{EMGs.label})
+        plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2);
+        emgSP.XTick = outTs(ii);
+        emgSP.XTickLabel = {num2str(outTs(ii))};
+        emgSP.Box = 'off';
+        emgSP.YLim = [-0.2 1.2];
+        emgSP.XLim = [outTs(ii)-.1,outTs(ii)+.4];
+        emgSP.TickDir = 'out';
+        emgSP.YTick = [];
+        xlabel(emgSP,'Time (s)');
+        emgSP.NextPlot = 'replace';
+    end
+    
+    
+    
     
     % find the current time in the associated video, correcting for skips
     for jj = 1:length(vidSP)
@@ -238,7 +270,7 @@ for ii = 60:4000 % just two minutes for the moment
     plot(cortSP,[100,100],[1,length(numElecs)],'r:','LineWidth',2);
     cortSP.NextPlot = 'replace';
     
-    plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2);
+    cla(emgSP)
     emgSP.NextPlot = 'add';
     for jj = 1:numel(EMGs)
         [~,winBegin] = min(abs(EMGs(jj).bin_times-(outTs(ii)-.1)));
@@ -246,6 +278,7 @@ for ii = 60:4000 % just two minutes for the moment
         plot(emgSP,EMGs(jj).bin_times(winBegin:winEnd),EMGs(jj).bin_data(winBegin:winEnd))
     end
     legend(emgSP,{EMGs.label})
+    plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2);
     emgSP.XTick = outTs(ii);
     emgSP.XTickLabel = {num2str(outTs(ii))};
     emgSP.Box = 'off';
@@ -266,8 +299,7 @@ for ii = 60:4000 % just two minutes for the moment
         imshow(currFrame(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
     end
     
-    frame = getframe(f);
-    writeVideo(outVid,frame);
+    saveas(f,[outputFolder,filesep,'screen_',num2str(ii,'%03i')],'png')
     
     if mod(outTs(ii),1) == 0
         disp(['Converting t = ',num2str(outTs(ii))]);
@@ -276,5 +308,10 @@ for ii = 60:4000 % just two minutes for the moment
 end
 
 
-close(outVid);
+% close(outVid);
+sysCmd = ['ffmpeg -r 30 -start_number 60 -i "',...
+    outputFolder,'\screen_%03d.png" -c:v libx264 -vf "fps=30" combination_output.mp4'];
+system(sysCmd,'-echo');
 disp('Finished converting')
+
+
