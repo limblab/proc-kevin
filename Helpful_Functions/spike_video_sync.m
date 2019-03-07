@@ -21,7 +21,8 @@ outVidFullPath = strsplit(nevFullPath,'.nev');
 outVidFullPath = [outVidFullPath{1},'.avi'];
 
 hasEMG = false;
-[filename,pathname] = uigetfile({'*.ns2;*.ns3','*.rhd'});
+[filename,pathname] = uigetfile({'*.ns2;*.ns3','Blackrock Files';...
+    '*.rhd','Intan Files'});
 if ~(filename == 0)
     emgFullPath = [pathname,filename];
     hasEMG = true;
@@ -164,19 +165,22 @@ cortSP.TickDir = 'out';
 set(f,'Visible','off');
 % clip off the first and last 2 seconds
 disp('starting to convert video')
-for ii = 60:(length(outTs)-60) 
+for ii = 60:180 % just two minutes for the moment
     
 %     keyboard
     cortFrame = binnedSpikes(:,(int32(outTs(ii)*1000-100):int32(outTs(ii)*1000+400)));
     imagesc(cortFrame,'Parent',cortSP)
-%     cortSP.XTick = [1000];
-%     cortSP.XTickLabel = {num2str(outTs(ii))};
+    cortSP.XTick = [100];
+    cortSP.XTickLabel = {num2str(outTs(ii))};
+    hold on
+    plot(cortSP,[100,100],[1,length(numElecs)],'r:');
     
     % find the current time in the associated video, correcting for skips
     for jj = 1:length(vidSP)
         [~,currFrame] = min(abs(tsFiles{jj}-outTs(ii)));
         vidObj{jj}.CurrentTime = currFrame/30;
-        imshow(readFrame(vidObj{jj}),'Parent',vidSP{jj});
+        currFrame = readFrame(vidObj{jj});
+        imshow(currFrame(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
     end
     
     frame = getframe(f);
