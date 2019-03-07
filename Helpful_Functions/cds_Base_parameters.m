@@ -44,15 +44,27 @@ task = 'ball_drop';
 lab = 1;
 array_names = 'rightM1';
 
+%% Kevin
+mapFile = 'Z:\limblab-archive\Retired Animal Logs\Monkeys\Kevin 12A2\Array_Maps\SN 6250-001273.cmp';
+monkey = 'Kevin';
+ranBy = 'StephNaufel';
+task = 'WF';
+lab = 1;
+array_names = 'rightM1';
+
+
+
 
 %% Add to a cds object
+clc
 cds = commonDataStructure;
-file =  '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\User_folders\Kevin\ForAlessandro\01-17-11\Jaco_01-17-11_002.nev';%,'Z:\limblab\User_folders\Kevin\ForAlessandro\03-09-11\Jaco_03-09-11_002.nev';
-
+file =  'D:\ForEge\Kevin_20150520_WmHandleHorizXaxisonly_Utah14EMGs_SN_005.nev';
 
 
 cds.file2cds(file,lab,['array', array_names],['monkey', monkey],['task', task],['ranBy', ranBy],'ignoreJumps',['mapFile', mapFile]);
-
+('Created CDS')
 
 filesplit = strsplit(file,'.');
 save([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'cds')
+
+disp('Save Completed')

@@ -60,6 +60,9 @@ for ii = 1:numel(relfile)
         case 'ball_drop'
             event_names = {'startTime','endTime','touchPadTime','goCueTime','pickupTime'};
             trial_meta = {'result','catchFlag'};
+        case 'WF'
+            event_names = {'startTime','endTime','tgtOnTime','goCueTime'};
+            trial_meta = {'result','tgtCorners','tgtCtr','tgtDir','isCatch','adapt'};
     end
 
 
