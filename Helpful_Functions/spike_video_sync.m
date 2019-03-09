@@ -37,12 +37,16 @@ end
 %% open the .nev and video
 nevStruct = openNEV(nevFullPath,'nomat','nosave','read'); % open the nev
 
-% any and all videos to read from
-vidObj = cell(size(videoFullPath));
-for ii = 1:numel(vidObj)
-    vidObj{ii} = VideoReader(videoFullPath{ii}); % open the video to read
+% create a new directory for the video stills and get them all using ffmpeg
+for ii = 1:numel(videoFullPath)
+    tempInVidFolder = strsplit(videoFullPath{ii},'.')
+    inVidFolder{ii} = [strjoin(tempInVidFolder(1:end-1),'.'),'_frames'];
+    mkdir(inVidFolder{ii})
+    
+    sysCmd = ['ffmpeg -i ',videoFullPath{ii},' -r 1/1 ',...
+        inVidFolder{ii},filesep,'img_%05d.bmp'];
+    system(sysCmd,'-echo');
 end
-
 
 
 if hasEMG
@@ -163,7 +167,7 @@ else
 
 end
 
-colormap(cortSP,1-gray)
+
 cortSP.TickDir = 'out';
 set(f,'Visible','off');
 % clip off the first and last 2 seconds
@@ -178,6 +182,7 @@ for ii = 60:180 % just two minutes for the moment
     cortSP.YTick = [];
     cortSP.Box = 'off';
     xlabel(cortSP,'Time (s)');
+    colormap(cortSP,1-gray)
     cortSP.NextPlot = 'add';
     plot(cortSP,[100,100],[1,length(numElecs)],'r:','LineWidth',2);
     cortSP.NextPlot = 'replace';
@@ -192,7 +197,7 @@ for ii = 60:180 % just two minutes for the moment
             plot(emgSP,EMGs(jj).bin_times(winBegin:winEnd),EMGs(jj).bin_data(winBegin:winEnd))
         end
         legend(emgSP,{EMGs.label})
-        plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2);
+        plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2,'DisplayName','Current Time');
         emgSP.XTick = outTs(ii);
         emgSP.XTickLabel = {num2str(outTs(ii))};
         emgSP.Box = 'off';
@@ -210,8 +215,7 @@ for ii = 60:180 % just two minutes for the moment
     % find the current time in the associated video, correcting for skips
     for jj = 1:length(vidSP)
         [~,currFrame] = min(abs(tsFiles{jj}-outTs(ii)));
-        vidObj{jj}.CurrentTime = currFrame/30;
-        currFrame = readFrame(vidObj{jj});
+        
         imshow(currFrame(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
     end
     
@@ -250,12 +254,13 @@ emgSP = subplot(2,2,3);
 vidSP{1} = subplot(2,2,2);
 vidSP{2} = subplot(2,2,4);
 
-colormap(cortSP,1-gray)
+
 cortSP.TickDir = 'out';
 emgSP.TickDir = 'out';
 set(f,'Visible','off');
 % clip off the first and last 2 seconds
 disp('starting to convert video')
+profile on
 for ii = 60:4000 % just two minutes for the moment
     
 %     keyboard
@@ -266,6 +271,7 @@ for ii = 60:4000 % just two minutes for the moment
     cortSP.YTick = [];
     cortSP.Box = 'off';
     xlabel(cortSP,'Time (s)');
+    colormap(cortSP,1-gray)
     cortSP.NextPlot = 'add';
     plot(cortSP,[100,100],[1,length(numElecs)],'r:','LineWidth',2);
     cortSP.NextPlot = 'replace';
@@ -278,10 +284,11 @@ for ii = 60:4000 % just two minutes for the moment
         plot(emgSP,EMGs(jj).bin_times(winBegin:winEnd),EMGs(jj).bin_data(winBegin:winEnd))
     end
     legend(emgSP,{EMGs.label})
-    plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2);
+    plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2,'DisplayName','Current Time');
     emgSP.XTick = outTs(ii);
     emgSP.XTickLabel = {num2str(outTs(ii))};
     emgSP.Box = 'off';
+    emgSP.Legend.Box = 'off';
     emgSP.YLim = [-0.2 1.2];
     emgSP.XLim = [outTs(ii)-.1,outTs(ii)+.4];
     emgSP.TickDir = 'out';
@@ -294,12 +301,12 @@ for ii = 60:4000 % just two minutes for the moment
     % find the current time in the associated video, correcting for skips
     for jj = 1:length(vidSP)
         [~,currFrame] = min(abs(tsFiles{jj}-outTs(ii)));
-        vidObj{jj}.CurrentTime = currFrame/30;
-        currFrame = readFrame(vidObj{jj});
-        imshow(currFrame(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
+        thisLittleFrameOfMine = imread([inVidFolder{jj},filesep,'screen_',num2str(currFrame,'%03i'),'.bmp'],'bmp');
+        
+        imshow(thisLittleFrameOfMine(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
     end
     
-    saveas(f,[outputFolder,filesep,'screen_',num2str(ii,'%03i')],'png')
+    saveas(f,[outputFolder,filesep,'screen_',num2str(ii,'%05i')],'bmp')
     
     if mod(outTs(ii),1) == 0
         disp(['Converting t = ',num2str(outTs(ii))]);
@@ -309,9 +316,9 @@ end
 
 
 % close(outVid);
-sysCmd = ['ffmpeg -r 30 -start_number 60 -i "',...
-    outputFolder,'\screen_%03d.png" -c:v libx264 -vf "fps=30" combination_output.mp4'];
-system(sysCmd,'-echo');
+% sysCmd = ['ffmpeg -r 30 -start_number 60 -i "',...
+%     outputFolder,'\screen_%05d.png" -c:v libx264 -vf "fps=30" combination_output.mp4'];
+% system(sysCmd,'-echo');
 disp('Finished converting')
-
+profile viewer
 
