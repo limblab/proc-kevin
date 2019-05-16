@@ -32,19 +32,22 @@
 
 %% with CDS
 % [fn,pn] = uigetfile('*_cds.mat');
-pn = uigetdir('.');
-
-df = dir(pn);
-relfile = df(contains({df.name},'_cds.mat'));
-
-for ii = 1:numel(relfile)
-    fn = relfile(ii).name;
-    load([pn,filesep,fn]);
-    tempfilename = strsplit(fn,'_cds.mat');
-    tempfilename = [pn,filesep,tempfilename{1}];
+clc
+[fn,pn] = uigetfile({'*_cds.mat','CDS files (_cds.mat)'},...
+   	'Pick the CDS files to convert','Multiselect','on'); % allows us to select multiple files
 
 
-    emg_signal_names = cds.emg.Properties.VariableNames(2:end);
+
+for ii = 1:numel(fn)
+    sprintf('\n File %i of %i \n',ii,numel(fn))
+    
+    filename = [pn,filesep,fn(ii)];
+    load(filename);
+    tempfilename = strsplit(filename,'_cds.mat');
+    tempfilename = tempfilename{1};
+
+
+
     params = struct('bin_size',.001);
 
     meta = cds.meta;
@@ -52,31 +55,21 @@ for ii = 1:numel(relfile)
     meta.td_taskname = meta.task;
     meta.EMGrecorded = true;
 
+    ttLabels = contains(cds.trials.Properties.VariableNames,'Time');
+    event_names = cds.trials.Properties.VariableNames(ttLabels);
+    trial_meta = cds.trials.Properties.VariableNames(~ttLabels);
 
-    switch meta.task
-        case 'multi_gadget'
-            event_names = {'startTime','endTime','touchPadTime','goCueTime','gadgetOnTime'};
-            trial_meta = {'result','catchFlag','gadgetNumber','tgtCorners','tgtCenter','tgtDir'};
-        case 'ball_drop'
-            event_names = {'startTime','endTime','touchPadTime','goCueTime','pickupTime'};
-            trial_meta = {'result','catchFlag'};
-        case 'WF'
-            event_names = {'startTime','endTime','tgtOnTime','goCueTime'};
-            trial_meta = {'result','tgtCorners','tgtCtr','tgtDir','isCatch','adapt'};
-    end
-
-
-
+    
     signal_info = {
-        initSignalStruct('filename', [pn,filesep,fn],...
+        initSignalStruct('filename', [fn,filesep,fn],...
             'routine', @processCDSspikes,...
             'params',struct(),...
-            'name','rightM1',...
+            'name',meta.array,...
             'type','spikes',...
             'label','');
 
 
-        initSignalStruct('filename',[pn,filesep,fn],...
+        initSignalStruct('filename',[fn,filesep,fn],...
             'routine',@processCDSevents,...
             'params',struct('trial_meta',{trial_meta}),...
             'name',event_names,...
@@ -84,15 +77,17 @@ for ii = 1:numel(relfile)
             'type',repmat({'event'},1,length(event_names)));
 
 
-        initSignalStruct('filename',[pn,filesep,fn],...
+    };
+
+
+    if cds.meta.hasEmg
+        signal_info{end+1} = initSignalStruct('filename',[fn,filesep,fn],...
             'routine',@processCDScontinuous,...
             'params',struct('trial_meta',{trial_meta}),...
-            'name',emg_signal_names,...
-            'label',emg_signal_names,...
+            'name',cds.emg.Properties.VariableNames(2:end),...
+            'label',cds.emg.Properties.VariableNames(2:end),...
             'type',repmat({'emg'},1,length(emg_signal_names)));
-
-
-    };
+    end
 
 
     if strcmp(meta.task,'multi_gadget')

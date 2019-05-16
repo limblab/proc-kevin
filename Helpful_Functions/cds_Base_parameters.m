@@ -21,18 +21,26 @@ array_names = 'arrayM1';
 %% Chewie PMd array
 mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Lab-Wide Animal Info\Implants\Blackrock Array Info\Array Map Files\6251-001469\SN 6251-001469.cmp';
 monkey = 'Chewie';
-ranBy = 'Kevin';
+ranBy = 'Matt';
 task = 'cage';
 lab = 6;
 array_names = 'arrayPMd';
+
+%% Chewie M1 array
+mapFile = "\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab-archive\Retired Animal Logs\Monkeys\Mihili 12A3\old_array_maps\Mihili Right M1 SN  6250-000989.cmp";
+monkey = 'Chewie';
+ranBy = 'Matt';
+task = 'CO';
+lab = 3;
+array_names = 'rightM1';
 
 
 %% Greyson left M1
 mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\Greyson_17L2\Array Map Files\6250-001696 (Left M1 2018)\SN 6250-001696.cmp';
 monkey = 'Greyson';
-ranBy = 'Kevin';
-task = 'cage';
-lab = 0;
+ranBy = 'KevinAndXuan';
+task = 'WF';
+lab = 1;
 array_names = 'leftM1';
 
 
@@ -56,15 +64,26 @@ array_names = 'rightM1';
 
 
 %% Add to a cds object
+
+d = dir('*.nev');
+
+for ii = 1:length(d)
+clear cds
 clc
+sprintf('Converting file %i of %i',ii,length(d))
 cds = commonDataStructure;
-file =  'D:\ForEge\Kevin_20150520_WmHandleHorizXaxisonly_Utah14EMGs_SN_005.nev';
-
-
-cds.file2cds(file,lab,['array', array_names],['monkey', monkey],['task', task],['ranBy', ranBy],'ignoreJumps',['mapFile', mapFile]);
-('Created CDS')
-
+% file =  'D:\Greyson\20190415\20190415_Greyson_isoWF_003.nev';
+file = [d(ii).folder,filesep,d(ii).name];
 filesplit = strsplit(file,'.');
-save([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'cds')
+if ~exist([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'file')
+
+    cds.file2cds(file,lab,['array', array_names],['monkey', monkey],['task', task],['ranBy', ranBy],'ignoreJumps',['mapFile', mapFile]);
+    disp('Created CDS')
+
+    
+    save([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'cds')
+end
 
 disp('Save Completed')
+
+end

@@ -39,13 +39,13 @@ nevStruct = openNEV(nevFullPath,'nomat','nosave','read'); % open the nev
 
 % create a new directory for the video stills and get them all using ffmpeg
 for ii = 1:numel(videoFullPath)
-    tempInVidFolder = strsplit(videoFullPath{ii},'.')
+    tempInVidFolder = strsplit(videoFullPath{ii},'.');
     inVidFolder{ii} = [strjoin(tempInVidFolder(1:end-1),'.'),'_frames'];
     mkdir(inVidFolder{ii})
     
-    sysCmd = ['ffmpeg -i ',videoFullPath{ii},' -r 1/1 ',...
-        inVidFolder{ii},filesep,'img_%05d.bmp'];
-    system(sysCmd,'-echo');
+%     sysCmd = ['ffmpeg -r 30 -i ',videoFullPath{ii},' ',...
+%         inVidFolder{ii},filesep,'img_%05d.bmp'];
+%     system(sysCmd,'-echo');
 end
 
 
@@ -261,13 +261,13 @@ set(f,'Visible','off');
 % clip off the first and last 2 seconds
 disp('starting to convert video')
 profile on
-for ii = 60:4000 % just two minutes for the moment
+for ii = 60:720 % just one second for the moment
     
 %     keyboard
     cortFrame = binnedSpikes(:,(int32(outTs(ii)*1000-100):int32(outTs(ii)*1000+400)));
     imagesc(cortFrame,'Parent',cortSP)
     cortSP.XTick = [100];
-    cortSP.XTickLabel = {num2str(outTs(ii))};
+    cortSP.XTickLabel = {num2str(outTs(ii),'%02.2f')};
     cortSP.YTick = [];
     cortSP.Box = 'off';
     xlabel(cortSP,'Time (s)');
@@ -286,7 +286,7 @@ for ii = 60:4000 % just two minutes for the moment
     legend(emgSP,{EMGs.label})
     plot(emgSP,[outTs(ii),outTs(ii)],[-.2 1.2],'r:','LineWidth',2,'DisplayName','Current Time');
     emgSP.XTick = outTs(ii);
-    emgSP.XTickLabel = {num2str(outTs(ii))};
+    emgSP.XTickLabel = {num2str(outTs(ii),'%02.2f')};
     emgSP.Box = 'off';
     emgSP.Legend.Box = 'off';
     emgSP.YLim = [-0.2 1.2];
@@ -301,12 +301,13 @@ for ii = 60:4000 % just two minutes for the moment
     % find the current time in the associated video, correcting for skips
     for jj = 1:length(vidSP)
         [~,currFrame] = min(abs(tsFiles{jj}-outTs(ii)));
-        thisLittleFrameOfMine = imread([inVidFolder{jj},filesep,'screen_',num2str(currFrame,'%03i'),'.bmp'],'bmp');
+        thisLittleFrameOfMine = imread([inVidFolder{jj},filesep,'screen_',num2str(currFrame,'%05i')],'bmp');
         
         imshow(thisLittleFrameOfMine(1:2:end,1:2:end,:),'Parent',vidSP{jj}); %halving the resolution so the file doesn't balloon
+        title(vidSP{jj},sprintf('Frame %i Time %02.2f',currFrame,outTs(ii)))
     end
     
-    saveas(f,[outputFolder,filesep,'screen_',num2str(ii,'%05i')],'bmp')
+    saveas(f,[outputFolder,filesep,'screen_',num2str(ii,'%05i')],'png')
     
     if mod(outTs(ii),1) == 0
         disp(['Converting t = ',num2str(outTs(ii))]);
@@ -315,10 +316,10 @@ for ii = 60:4000 % just two minutes for the moment
 end
 
 
-% close(outVid);
-% sysCmd = ['ffmpeg -r 30 -start_number 60 -i "',...
-%     outputFolder,'\screen_%05d.png" -c:v libx264 -vf "fps=30" combination_output.mp4'];
-% system(sysCmd,'-echo');
+tempVidName = [outputFolder,filesep,'combined_video.mp4'];
+sysCmd = ['ffmpeg -r 30 -start_number 60 -i "',...
+    outputFolder,'\screen_%05d.png" -c:v libx264 -vf "fps=30" ',tempVidName];
+system(sysCmd,'-echo');
 disp('Finished converting')
 profile viewer
 
