@@ -41,7 +41,7 @@ clc
 for ii = 1:numel(fn)
     sprintf('\n File %i of %i \n',ii,numel(fn))
     
-    filename = [pn,filesep,fn(ii)];
+    filename = [pn,filesep,fn{ii}];
     load(filename);
     tempfilename = strsplit(filename,'_cds.mat');
     tempfilename = tempfilename{1};
@@ -51,17 +51,22 @@ for ii = 1:numel(fn)
     params = struct('bin_size',.001);
 
     meta = cds.meta;
-    meta.date = datestr(meta.processedTime,'yyyymmdd');
+%     meta.date = datestr(meta.processedTime,'yyyymmdd');
     meta.td_taskname = meta.task;
-    meta.EMGrecorded = true;
+    meta.EMGrecorded = false;
 
-    ttLabels = contains(cds.trials.Properties.VariableNames,'Time');
+    if datenum(version('-date'))<datenum('Jan-01-2017')
+        ttLabels = ~cell2mat(cellfun(@isempty,strfind(cds.trials.Properties.VariableNames,'time'),...
+            'UniformOutput',false))
+    else
+        ttLabels = contains(cds.trials.Properties.VariableNames,'Time');
+    end
     event_names = cds.trials.Properties.VariableNames(ttLabels);
     trial_meta = cds.trials.Properties.VariableNames(~ttLabels);
 
     
     signal_info = {
-        initSignalStruct('filename', [fn,filesep,fn],...
+        initSignalStruct('filename', filename,...
             'routine', @processCDSspikes,...
             'params',struct(),...
             'name',meta.array,...
@@ -69,7 +74,7 @@ for ii = 1:numel(fn)
             'label','');
 
 
-        initSignalStruct('filename',[fn,filesep,fn],...
+        initSignalStruct('filename',filename,...
             'routine',@processCDSevents,...
             'params',struct('trial_meta',{trial_meta}),...
             'name',event_names,...
@@ -81,7 +86,7 @@ for ii = 1:numel(fn)
 
 
     if cds.meta.hasEmg
-        signal_info{end+1} = initSignalStruct('filename',[fn,filesep,fn],...
+        signal_info{end+1} = initSignalStruct('filename',filename,...
             'routine',@processCDScontinuous,...
             'params',struct('trial_meta',{trial_meta}),...
             'name',cds.emg.Properties.VariableNames(2:end),...
