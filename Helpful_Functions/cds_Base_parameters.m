@@ -3,7 +3,7 @@
 %% Jango Lab - wireless
 mapFile = 'D:\Jango\SN6250-000945.cmp'; % Jango Array map for wired
 monkey = 'Jango';
-ranBy = 'Kevin';
+ranBy = 'Steph';
 task = 'multi_gadget'; % might have to change this
 lab = 1; % we should fix this, yeah?
 array_names = 'arrayM1';
@@ -65,7 +65,8 @@ array_names = 'rightM1';
 
 %% Add to a cds object
 
-d = dir('*.nev');
+dd = uigetdir('.')
+d = dir([dd,filesep,'*.nev']);
 
 
 for ii = 1:length(d)
@@ -74,14 +75,15 @@ clc
 sprintf('Converting file %i of %i',ii,length(d))
 cds = commonDataStructure;
 % file =  'D:\Greyson\20190415\20190415_Greyson_isoWF_003.nev';
-file = [pwd,filesep,d(ii).name];
+file = [dd,filesep,d(ii).name];
 filesplit = strsplit(file,'.');
 if ~exist([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'file')
     try
         cds.file2cds(file,lab,['array', array_names],['monkey', monkey],['task', task],['ranBy', ranBy],'ignoreJumps',['mapFile', mapFile]);
         disp('Created CDS')
-    catch
-        disp('error in creating CDS. Going to save it anyways');
+    catch ERROR
+        warning(ERROR)
+        warning('error in creating CDS. Going to save it anyways');
     end
     
     save([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'cds')
