@@ -1,0 +1,7 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LED_shift_register_SPI
+F /home/kevin/Documents/kicad/Libraries/PCA9745B.pdf
+$ENDCMP
+#
+#End Doc Library

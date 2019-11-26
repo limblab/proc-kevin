@@ -1,0 +1,194 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Regulator_Switching:LM2576HVT-ADJ U?
+U 1 1 5DDC149A
+P 5050 3150
+F 0 "U?" H 5050 3517 50  0000 C CNN
+F 1 "LM2576HVT-ADJ" H 5050 3426 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-5_Vertical" H 5050 2900 50  0001 L CIN
+F 3 "http://www.ti.com/lit/ds/symlink/lm2576.pdf" H 5050 3150 50  0001 C CNN
+	1    5050 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5DDC385E
+P 4050 3200
+F 0 "C?" H 4165 3246 50  0000 L CNN
+F 1 "100uF" H 4165 3155 50  0000 L CNN
+F 2 "" H 4088 3050 50  0001 C CNN
+F 3 "~" H 4050 3200 50  0001 C CNN
+	1    4050 3200
+	1    0    0    -1  
+$EndComp
+$Comp
+L pspice:INDUCTOR L?
+U 1 1 5DDC558C
+P 6350 3250
+F 0 "L?" H 6450 3200 50  0000 C CNN
+F 1 "100uH" H 6450 3100 50  0000 C CNN
+F 2 "" H 6350 3250 50  0001 C CNN
+F 3 "~" H 6350 3250 50  0001 C CNN
+	1    6350 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C?
+U 1 1 5DDC5D37
+P 6950 3400
+F 0 "C?" H 6700 3350 50  0000 L CNN
+F 1 "1000uF" H 6600 3250 50  0000 L CNN
+F 2 "" H 6988 3250 50  0001 C CNN
+F 3 "~" H 6950 3400 50  0001 C CNN
+	1    6950 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6950 3250 6600 3250
+Wire Wire Line
+	4050 3050 4550 3050
+$Comp
+L power:GND #PWR?
+U 1 1 5DDC905A
+P 4050 3350
+F 0 "#PWR?" H 4050 3100 50  0001 C CNN
+F 1 "GND" H 4055 3177 50  0000 C CNN
+F 2 "" H 4050 3350 50  0001 C CNN
+F 3 "" H 4050 3350 50  0001 C CNN
+	1    4050 3350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5DDC986E
+P 5050 3450
+F 0 "#PWR?" H 5050 3200 50  0001 C CNN
+F 1 "GND" H 5055 3277 50  0000 C CNN
+F 2 "" H 5050 3450 50  0001 C CNN
+F 3 "" H 5050 3450 50  0001 C CNN
+	1    5050 3450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5DDC9DFE
+P 4450 3400
+F 0 "#PWR?" H 4450 3150 50  0001 C CNN
+F 1 "GND" H 4455 3227 50  0000 C CNN
+F 2 "" H 4450 3400 50  0001 C CNN
+F 3 "" H 4450 3400 50  0001 C CNN
+	1    4450 3400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4450 3400 4450 3250
+Wire Wire Line
+	4450 3250 4550 3250
+Text Label 3450 3050 2    50   ~ 0
+Vin
+Wire Wire Line
+	3450 3050 4050 3050
+Connection ~ 4050 3050
+$Comp
+L power:GND #PWR?
+U 1 1 5DDCCD7E
+P 6950 3550
+F 0 "#PWR?" H 6950 3300 50  0001 C CNN
+F 1 "GND" H 6955 3377 50  0000 C CNN
+F 2 "" H 6950 3550 50  0001 C CNN
+F 3 "" H 6950 3550 50  0001 C CNN
+	1    6950 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5DDCD198
+P 5900 3650
+F 0 "#PWR?" H 5900 3400 50  0001 C CNN
+F 1 "GND" H 5905 3477 50  0000 C CNN
+F 2 "" H 5900 3650 50  0001 C CNN
+F 3 "" H 5900 3650 50  0001 C CNN
+	1    5900 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5DDCFB81
+P 7500 3400
+F 0 "R?" H 7570 3446 50  0000 L CNN
+F 1 "R" H 7570 3355 50  0000 L CNN
+F 2 "" V 7430 3400 50  0001 C CNN
+F 3 "~" H 7500 3400 50  0001 C CNN
+	1    7500 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5DDCFF86
+P 7500 3700
+F 0 "R?" H 7570 3746 50  0000 L CNN
+F 1 "1k" H 7570 3655 50  0000 L CNN
+F 2 "" V 7430 3700 50  0001 C CNN
+F 3 "~" H 7500 3700 50  0001 C CNN
+	1    7500 3700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7500 3550 7200 3550
+Wire Wire Line
+	7200 3550 7200 3050
+Wire Wire Line
+	7200 3050 5550 3050
+Connection ~ 7500 3550
+Wire Wire Line
+	5550 3250 5900 3250
+$Comp
+L Diode:B360 D?
+U 1 1 5DDD1D83
+P 5900 3400
+F 0 "D?" V 5854 3479 50  0000 L CNN
+F 1 "B360" V 5945 3479 50  0000 L CNN
+F 2 "Diode_SMD:D_SMC" H 5900 3225 50  0001 C CNN
+F 3 "http://www.jameco.com/Jameco/Products/ProdDS/1538777.pdf" H 5900 3400 50  0001 C CNN
+	1    5900 3400
+	0    1    1    0   
+$EndComp
+Connection ~ 5900 3250
+Wire Wire Line
+	5900 3250 6100 3250
+Wire Wire Line
+	5900 3550 5900 3650
+Wire Wire Line
+	6950 3250 7500 3250
+Connection ~ 6950 3250
+Wire Wire Line
+	7500 3250 7900 3250
+Connection ~ 7500 3250
+$Comp
+L power:GND #PWR?
+U 1 1 5DDD3EA8
+P 7500 3850
+F 0 "#PWR?" H 7500 3600 50  0001 C CNN
+F 1 "GND" H 7505 3677 50  0000 C CNN
+F 2 "" H 7500 3850 50  0001 C CNN
+F 3 "" H 7500 3850 50  0001 C CNN
+	1    7500 3850
+	1    0    0    -1  
+$EndComp
+Text Label 7900 3250 0    50   ~ 0
+Vout
+$EndSCHEMATC
