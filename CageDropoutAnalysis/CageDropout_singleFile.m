@@ -1,70 +1,85 @@
+%% CageDropout_singleFile
+%
+% Calculates the frequency and length of dropouts.
+% Dropouts are defined in this case as any time that there aren't any
+% spikes on any channels for longer than a defined threshold. Standard
+% threshold is 10 ms, which should be safe
+%
+% Provided without any guarantees etc etc. Feel free to update and pass
+% this file on, let me know if you find any issues so that I can update my
+% own code.
+%
+% Kevin Bodkin
+% September 2019
+% kevinbodkin2017@u.northwestern.edu
+
+
 %% open the .nev file
+% these are written with R2017+ versions of uigetfile.
 
-if ~exist('LD')
-    LD = '.';
+if ~exist('basedir')
+    basedir = '.';
 end
 
-[nevFN,nevPN] = uigetfile([LD,filesep,'*.nev'],'Spiking file');
-LD = nevPN;
+[nevFN,nevPN] = uigetfile([basedir,filesep,'*.nev'],'Spiking file');
+basedir = nevPN;
 fn = [nevPN,nevFN];
-nev = openNEV(fn,'nomat','nosave');
+nev = openNEV(fn,'nomat','nosave','noread');
 
 
-%%
+%% find dropouts
 clc
-fprintf('%s\n%0.2f',nevFN,nev.MetaTags.DateTime)
-binLength = [.01 .06];
-for ii = 1:length(binLength)
-%% bin the spikes -- this way we can try a bunch of different bin lengths
-% binLength = .06;
-tt = 0:binLength(ii):nev.MetaTags.DataDurationSec;
-
-electrodes = unique(nev.Data.Spikes.Electrode);
-spikesBinned = nan(numel(electrodes),length(tt)-1);
-for jj = 1:numel(electrodes)
-    spikesBinned(jj,:) = histcounts(double(nev.Data.Spikes.TimeStamp(nev.Data.Spikes.Electrode == electrodes(jj)))/30000,tt); % get a binned array of spikes
-end
-
-emptyBins = sum(spikesBinned) == 0; % find timepoints without firing on any electrode
-
-% dropoutIDx = find(diff(double(nev.Data.Spikes.TimeStamp)/33000)>(binLength(ii))); % index values of timesteps with too large of spaces before the next one.
-% dropoutStarts = double(nev.Data.Spikes.TimeStamp(dropoutIDx))/33000; % The beginning of the 
-% dropoutEnds = double(nev.Data.Spikes.TimeStamp(dropoutIDx+1))/33000; % the next timestamp, aka the end of the drop
-
-%% Calculate the statistics of dropouts
-
-dropoutStarts = find(diff(emptyBins) == 1); % shifting from one to zero
-dropoutEnds = find(diff(emptyBins) == -1); % shifting from zero to one
-
-% if we have a dropout that starts or ends on the edge of the recording
-if dropoutStarts(1) > dropoutEnds(1)
-    dropoutStarts = [1 dropoutStarts];
-end
-if dropoutEnds(end) < dropoutStarts(end)
-    dropoutEnds = [dropoutEnds numel(dropoutEnds)];
-end
-
-dropoutLengths = dropoutEnds - dropoutStarts;
-
 displayGap = '\n-----------------------------------------------------------\n';
 fprintf(displayGap)
-fprintf('For bin length: %0.2f\n',binLength(ii))
-fprintf('Total percentage dropped signal: %0.3f%% \n',sum(emptyBins)/length(emptyBins)*100);
-fprintf('Number of dropouts: %i \n',length(dropoutStarts));
-fprintf('Longest dropout length: %0.3f seconds\n',max(dropoutLengths)*binLength(ii));
-fprintf('Mean dropout length: %0.3f seconds\n',mean(dropoutLengths)*binLength(ii));
+fprintf('%s\n%s\n',nevFN,nev.MetaTags.DateTime)
+
+dropoutThreshold = .01; % threshold for looking at dropouts, in seconds
+
+dropoutIdx = find(diff(double(nev.Data.Spikes.TimeStamp)/30000) > dropoutThreshold); % what are the indices of the starts of the dropouts
+dropoutStarts = double(nev.Data.Spikes.TimeStamp(dropoutIdx))/30000; % elapsed time for dropout start
+dropoutEnds = double(nev.Data.Spikes.TimeStamp(dropoutIdx+1))/30000; % " " " " end
+dropoutLengths = dropoutEnds - dropoutStarts; % length in seconds
+
+
+%% Summary statistics of dropouts
+percDrop = 100*sum(dropoutLengths)/nev.MetaTags.DataDurationSec; % percentage of total recording time that's a "dropout"
+numDrop = length(dropoutStarts); % number of dropouts
+
+
+fprintf('For threshold length: %0.2f\n',dropoutThreshold)
+fprintf('Total percentage dropped signal: %0.3f%% \n',percDrop);
+fprintf('Number of dropouts: %i \n',numDrop);
+fprintf('Longest dropout length: %0.3f seconds\n',max(dropoutLengths));
+fprintf('Mean dropout length: %0.3f seconds\n',mean(dropoutLengths));
 fprintf(displayGap)
 
-% 
-% 
-% displayGap = '\n-----------------------------------------------------------\n';
-% fprintf(displayGap)
-% fprintf('For bin length: %0.2f\n',binLength(ii))
-% fprintf('Total percentage dropped signal: %0.3f%% \n',sum(dropoutLengths)/nev.MetaTags.DataDurationSec);
-% fprintf('Number of dropouts: %i \n',length(dropoutStarts));
-% fprintf('Longest dropout length: %0.3f seconds\n',max(dropoutLengths));
-% fprintf('Mean dropout length: %0.3f seconds\n',mean(dropoutLengths));
-% fprintf(displayGap)
+%% Plot histograms of the dropout lengths
 
+ff = figure;
+subplot(2,1,1)
+timeBins = 0:.01:1;
+histogram(dropoutLengths,timeBins,'Normalization','count')
+xlabel('Dropout Length (s)')
+ylabel('Count')
+title('Dropout lengths between 10 ms and 1 s')
+subplot(2,1,2)
+timeBins = 1:.1:10;
+histogram(dropoutLengths,timeBins,'Normalization','count')
+xlabel('Dropout Length (s)')
+ylabel('Count')
+title('Dropout lengths between 1 and 10 seconds')
 
+% clean up the figure so it looks pretty
+for a = 1:length(ff.Children) % for all axes on the figure
+    ax = ff.Children(a);
+    if isa(ax,'matlab.graphics.axis.Axes')
+        ax.TickDir = 'out';
+        ax.Box = 'off';
+    elseif isa(ax,'matlab.graphics.illustration.Legend')
+        ax.Box = 'off';
+    end
+    
+    if ax.YLim(2) < 5 % set the ylim to at least 5 
+        ax.YLim(2) = 5;
+    end
 end
