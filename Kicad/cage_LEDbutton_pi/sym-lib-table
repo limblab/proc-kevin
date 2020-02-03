@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name cage_LEDbutton_pi-rescue)(type Legacy)(uri ${KIPRJMOD}/cage_LEDbutton_pi-rescue.lib)(options "")(descr ""))
+)

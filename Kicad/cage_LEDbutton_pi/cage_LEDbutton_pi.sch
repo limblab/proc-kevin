@@ -1,5 +1,4 @@
 EESchema Schematic File Version 4
-LIBS:cage_LEDbutton_pi-cache
 EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
@@ -15,13 +14,13 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L additional_LED_drivers:LED_shift_register_SPI U9
+L cage_LEDbutton_pi-rescue:LED_shift_register_SPI-additional_LED_drivers U9
 U 1 1 5DC3894E
 P 5550 4250
 F 0 "U9" H 5575 4365 50  0000 C CNN
 F 1 "LED_shift_register_SPI" H 5575 4274 50  0000 C CNN
 F 2 "Package_SO:HTSSOP-28-1EP_4.4x9.7mm_P0.65mm_EP3.4x9.5mm" H 5550 4250 50  0001 C CNN
-F 3 "/home/kevin/Documents/kicad/Libraries/PCA9745B.pdf" H 5550 4250 50  0001 C CNN
+F 3 "/home/kevin/Documents/git/proc-kevin/Kicad/Libraries/PCA9745B.pdf" H 5550 4250 50  0001 C CNN
 	1    5550 4250
 	-1   0    0    -1  
 $EndComp
@@ -393,7 +392,7 @@ $EndComp
 Wire Wire Line
 	4900 4400 5050 4400
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U2
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U2
 U 1 1 5DCB3B09
 P 1350 5850
 F 0 "U2" H 1400 5925 50  0000 C CNN
@@ -404,7 +403,7 @@ F 3 "" H 1350 5850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U3
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U3
 U 1 1 5DCBFAD0
 P 1350 6500
 F 0 "U3" H 1400 6575 50  0000 C CNN
@@ -415,7 +414,7 @@ F 3 "" H 1350 6500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U4
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U4
 U 1 1 5DCBFF51
 P 1350 7150
 F 0 "U4" H 1400 7225 50  0000 C CNN
@@ -426,7 +425,7 @@ F 3 "" H 1350 7150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U1
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U1
 U 1 1 5DCC0482
 P 1350 5150
 F 0 "U1" H 1400 5225 50  0000 C CNN
@@ -437,7 +436,7 @@ F 3 "" H 1350 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U5
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U5
 U 1 1 5DCC0AEA
 P 3150 5150
 F 0 "U5" H 3200 5225 50  0000 C CNN
@@ -448,7 +447,7 @@ F 3 "" H 3150 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U6
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U6
 U 1 1 5DCC0F1E
 P 3150 5850
 F 0 "U6" H 3200 5925 50  0000 C CNN
@@ -459,7 +458,7 @@ F 3 "" H 3150 5850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U7
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U7
 U 1 1 5DCC133F
 P 3150 6500
 F 0 "U7" H 3200 6575 50  0000 C CNN
@@ -470,7 +469,7 @@ F 3 "" H 3150 6500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L MillerLab_CommonComponents:LED_Button_connector U8
+L cage_LEDbutton_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U8
 U 1 1 5DCC1766
 P 3150 7150
 F 0 "U8" H 3200 7225 50  0000 C CNN
