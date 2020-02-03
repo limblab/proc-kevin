@@ -1,0 +1,9 @@
+[X] change code to export .nev files instead of .mat
+[ ] set up script to run through all desired combinations of settings
+	[X] threshold values, including the original
+	[X] non-causal filtering
+	[X] common mode average
+	[ ] (trickier) averages based on xcorr between channels
+[ ] run to get all desired .nev
+[ ] set up script for desired .nev to td conversion
+[ ] check td Wiener filter, set up to run
