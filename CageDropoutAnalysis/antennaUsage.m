@@ -44,25 +44,31 @@ nsSix = openNSx_KB(ns6FileName,'precision','uint16');
 
 
 
-% antInd = find(nsSix.ElectrodesInfo.ElectrodeID == 96); % we want channel 96
+antInd = [nsSix.ElectrodesInfo.ElectrodeID] == 96; % we want channel 96
 % for some reason pre-2020 matlab doesn't play well with signed
 % integers and bitwise operation, so we have to typecast the int16 as a
 % uint16. whee
-% antStream = typecast(nsSix.Data(antInd,:),'uint16');
+antStream = nsSix.Data(antInd,:);
 
 
 %% parse out the datastream
 % for firmware v5 we get both which antenna was used and which antennas
 % were even seeing the data
-antUse = nan(size(antStream)); % which antenna are we using for the signal?
-antConnect = nan(8,length(antStream)); % which antennas are connected?
+antUse = uint16(nan(size(antStream))); % which antenna are we using for the signal?
+antConnect = uint16(nan(8,length(antStream))); % which antennas are connected?
 validStream = nan(size(antStream)); % double check that the data stream looks legitimate
+validFlags = 2^12+sum(2.^[1:3]);
+
+
 
 for ii = 1:length(antStream)
-    antUse = bitshift(antStream(ii),-12); 
+    % which antenna are we using? bits 13-15 == antenna#
+    antUse = bitshift(antStream(ii),-13);
+    antUse = bitand(uint16(7),antUse)+1;
     
-    frame = bitshift(antStream(ii),-3);
+    frame = bitshift(antStream(ii),-4); % caring about bits 3-10 (4-11 per ming)
     for jj = 1:8
         antConnect(jj,ii) = any(bitand(antStream(ii),uint16(2^(jj-1))));
     end
-    validStream(ii) = ~any(bitand(
+    validStream(ii) = ~any(bitand(validFlags,antStream(ii))); % look for bits that _should_ be zero
+end

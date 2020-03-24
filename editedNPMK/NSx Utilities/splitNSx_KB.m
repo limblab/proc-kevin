@@ -36,25 +36,49 @@ function splitNSx_KB(varargin)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 
-% Validating input parameter
-if ~exist('splitCount', 'var')
-    splitCount = 2;
+% predefine the necessary variables
+splitCount = 2;
+fname = '';
+
+% parse file inputs
+for ii = 1:nargin
+    if isnumeric(vargin{ii})
+        splitCount = vargin{ii};
+    elseif ischar(vargin{ii})
+        [path,fname,fext] = fileparts(varargin{ii});
+        fname = [fname,'.',fext];
+        if isempty(path) % assume it's in the current working directory then -- will this work? dunno
+            path = pwd;
+        end
+        if ~exist([path,filesep,fname],'file')
+            fname = ''; % empty it out for the GUI if we can't find the file
+        end
+    else
+        error('Input number %d is invalid',ii)
+    end
 end
 
+
+
 % Getting the file name
-if ~ismac
-    [fname, path] = uigetfile('*.ns*', 'Choose an NSx file...');
-else
-    [fname, path] = uigetfile('*.*', 'Choose an NSx file...');
-end
-if fname == 0
-    disp('No file was selected.');
-    if nargout
-        clear variables;
+if isempty(fname) % if no filename was given, 
+    if ~ismac
+        [fname, path] = uigetfile('*.ns*', 'Choose an NSx file...');
+    else
+        [fname, path] = uigetfile('*.*', 'Choose an NSx file...');
     end
-    return;
+    if fname == 0
+        disp('No file was selected.');
+        if nargout
+            clear variables;
+        end
+        return;
+    end
+    
+    [~,~,fext] = fileparts(fname); % doesn't assume the extension length
 end
-fext = fname(end-3:end);
+
+
     
 % Loading the file
 %% Reading Basic Header from file into NSx structure.
