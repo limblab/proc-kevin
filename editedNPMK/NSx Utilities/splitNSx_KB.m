@@ -40,13 +40,15 @@ function splitNSx_KB(varargin)
 splitCount = 2;
 fname = '';
 
+% keyboard()
+
 % parse file inputs
 for ii = 1:nargin
-    if isnumeric(vargin{ii})
-        splitCount = vargin{ii};
-    elseif ischar(vargin{ii})
+    if isnumeric(varargin{ii})
+        splitCount = varargin{ii};
+    elseif ischar(varargin{ii})
         [path,fname,fext] = fileparts(varargin{ii});
-        fname = [fname,'.',fext];
+        fname = [fname,fext];
         if isempty(path) % assume it's in the current working directory then -- will this work? dunno
             path = pwd;
         end
@@ -82,7 +84,7 @@ end
     
 % Loading the file
 %% Reading Basic Header from file into NSx structure.
-FID                       = fopen([path fname], 'r', 'ieee-le');
+FID                       = fopen([path filesep fname], 'r', 'ieee-le');
 NSx.MetaTags.Filename     = fname;
 NSx.MetaTags.FilePath     = path(1:end-1);
 NSx.MetaTags.FileExt      = fext;
@@ -121,7 +123,7 @@ elseif strcmpi(NSx.MetaTags.FileTypeID, 'NEURALCD')
 	fseek(FID, positionEOE+9, 'bof');
     for idx = 1:splitCount
         % Opening a file for saving
-        FIDw = fopen([path fname(1:end-4) '-s' sprintf('%03d', idx) fname(end-3:end)], 'w+', 'ieee-le');
+        FIDw = fopen([path filesep fname(1:end-4) '-s' sprintf('%03d', idx) fname(end-3:end)], 'w+', 'ieee-le');
         fprintf('\nReading segment %d... ', idx);
         % Reading the segment
         dataSegment = fread(FID, segmentBytes, 'char');

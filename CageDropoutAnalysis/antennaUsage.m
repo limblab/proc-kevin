@@ -72,3 +72,5 @@ for ii = 1:length(antStream)
     end
     validStream(ii) = ~any(bitand(validFlags,antStream(ii))); % look for bits that _should_ be zero
 end
+
+keyboard()
