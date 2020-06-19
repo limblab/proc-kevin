@@ -1,15 +1,16 @@
 function splitNSx_KB(varargin)
 
-% splitNSx
+% splitNSx(varargin)
 % 
 % Opens and splits an NSx file in smaller pieces, timewise.
 %
-% Use splitNSx(splitCount)
+% Use splitNSx(filename,splitCount)
 % 
 % All input arguments are optional. Input arguments can be in any order.
 %
 %   splitCount:   Defines the number of splits.
 %                 DEFAULT: Splits the file in 2 pieces.
+%   filename:     file to split
 %
 %   Example 1: 
 %   splitNSx(4);
@@ -19,9 +20,6 @@ function splitNSx_KB(varargin)
 %   is 1 hour long then it will be split into four 15-minute files.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Kian Torab
-%   support@blackrockmicro.com
-%   Blackrock Microsystems
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Version History
@@ -33,6 +31,9 @@ function splitNSx_KB(varargin)
 %   - Fixed a bug related to a case where initial timestamp of the first
 %     data segment was not 0. 
 %
+% KB addition: 
+%  - Added the ability to take in a filename, rather than having to open it
+%    through the GUI file explorer. Good for scripting.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 
