@@ -1,0 +1,9 @@
+[ ] Reconfigure button board
+	[ ] Reward connector
+	[ ] Shift USB and update footprint, find alternative USB connector
+
+[ ] Reconfigure multigadget board
+	[ ] Reward connector
+	[ ] Shift USB and update footprint
+	[ ] Correct header connection footprint
+	
