@@ -1,51 +1,68 @@
-clear all
-close all
+% clear all
+% close all
 
-NS6 = openNSx(); 
+% keyboard;
 
-SampleLengthCutoff = 300; % Minimum length of dropouts to display in the output vector
-
-for i = 1:size(NS6.Data,1)
-    NS6.Data(i,:) = [1 diff(NS6.Data(i,:))];
-    NS6.Data(i,NS6.Data(i,:)>0) = 1;
-    NS6.Data(i,NS6.Data(i,:)<0) = 1;
+if exist('fname')
+    NS6 = openNSx(fname);
+else
+    NS6 = openNSx(); 
 end
 
-LossSum = sum(abs(NS6.Data),1);
-LossSum = LossSum(200:end); %Lose timestamp buffering period
+SampleLengthCutoff = 300; % Minimum length of dropouts to display in the output vector
+actualData = [NS6.ElectrodesInfo.ElectrodeID] ~= 96;
+NS6.Data = NS6.Data(actualData,:);
+
+
+
+lock = zeros(size(NS6.Data));
+for ii = 1:size(NS6.Data,1)
+    lock(ii,:) = abs([1 diff(NS6.Data(ii,:))])>1;
+end
+
+LossSum = sum(lock,1);
+% LossSum = LossSum(200:end); %Lose timestamp buffering period
 
 LossVec = zeros(1,length(LossSum)-6);
 
-for i = 3:length(LossSum)-3
-    if LossSum(i) == 0 && LossSum(i+1) == 0 && LossSum(i+2) == 0
-        LossVec(i) = 1;
+
+% keyboard
+
+for ii = 3:length(LossSum)-3
+    if LossSum(ii) == 0 && LossSum(ii+1) == 0 && LossSum(ii+2) == 0
+        LossVec(ii) = 1;
     end
-    if LossSum(i) == 0 && LossSum(i-1) == 0 && LossSum(i+1) == 0
-        LossVec(i) = 1;
+    if LossSum(ii) == 0 && LossSum(ii-1) == 0 && LossSum(ii+1) == 0
+        LossVec(ii) = 1;
     end
-    if LossSum(i) == 0 && LossSum(i-1) == 0 && LossSum(i-2) == 0
-        LossVec(i) = 1;
+    if LossSum(ii) == 0 && LossSum(ii-1) == 0 && LossSum(ii-2) == 0
+        LossVec(ii) = 1;
     end
 end
 
 streakStarts = find(diff([0 LossVec 0]) == 1);
 streakStops = find(diff([0 LossVec 0]) == -1);
-lossLengths = streakStops-streakStarts;
+lossLengths = double(streakStops-streakStarts);
 
-disp('Median dropout length (in samples):');
-disp(median(lossLengths)-1);
+disp('Median dropout length (in seconds):');
+medDrop = (median(lossLengths))/30000;
+disp(medDrop);
 
-disp('Mean dropout length (in samples):');
-disp(mean(lossLengths)-1);
+disp('Mean dropout length (in seconds):');
+meanDrop = (mean(lossLengths))/30000;
+disp(meanDrop);
 
-disp('Longest dropout (in samples):')
-disp(max(lossLengths)-1);
+disp('Longest dropout (in seconds):')
+maxDrop = (max(lossLengths))/30000;
+disp(maxDrop);
 
 disp('Number of Dropouts Greater than 10 ms:');
-disp(length(find(lossLengths>301)));
+threshDrop = length(find(lossLengths>301));
+disp(threshDrop);
 
 disp('Loss Percentage:')
-disp(round((length(find(LossVec==1))-length(lossLengths))/length(LossSum),2));
+percDrop = 100*sum(lossLengths)/length(LossSum);
+disp(percDrop);
 
 
 LossVec = [zeros(1,200+NS6.MetaTags.Timestamp) LossVec];

@@ -26,6 +26,7 @@ basedir = nevPN;
 fn = [nevPN,nevFN];
 nev = openNEV(fn,'nomat','nosave','noread');
 
+nev.Data.Spikes.TimeStamp = nev.Data.Spikes.TimeStamp(nev.Data.Spikes.Electrode ~= 96); % gets rid of electrode 96, which sends meta data as of the most recent firmware
 
 %% find dropouts
 clc
@@ -61,7 +62,7 @@ timeBins = 0:.01:1;
 histogram(dropoutLengths,timeBins,'Normalization','count')
 xlabel('Dropout Length (s)')
 ylabel('Count')
-title('Dropout lengths between 10 ms and 1 s')
+title(['Dropout lengths between ', num2str(100*dropoutThreshold), ' ms and 1 s'])
 subplot(2,1,2)
 timeBins = 1:.1:10;
 histogram(dropoutLengths,timeBins,'Normalization','count')

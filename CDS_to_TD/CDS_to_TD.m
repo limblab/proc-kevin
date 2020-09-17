@@ -36,6 +36,9 @@ clc
 [fn,pn] = uigetfile({'*_cds.mat','CDS files (_cds.mat)'},...
    	'Pick the CDS files to convert','Multiselect','on'); % allows us to select multiple files
 
+if ~iscell(fn)
+    fn = {fn};
+end
 
 
 for ii = 1:numel(fn)
@@ -47,14 +50,11 @@ for ii = 1:numel(fn)
     tempfilename = tempfilename{1};
 
 
-
-    params = struct('bin_size',.001);
-
     meta = cds.meta;
 %     meta.date = datestr(meta.processedTime,'yyyymmdd');
     meta.td_taskname = meta.task;
-    meta.EMGrecorded = false;
-
+    
+    
     if datenum(version('-date'))<datenum('Jan-01-2017')
         ttLabels = ~cell2mat(cellfun(@isempty,strfind(cds.trials.Properties.VariableNames,'time'),...
             'UniformOutput',false))
@@ -86,27 +86,35 @@ for ii = 1:numel(fn)
 
 
     if cds.meta.hasEmg
+        
+        emg_params = struct('trial_meta',{trial_meta},...
+            'emg_LPF_cutoff', 10,...
+            'emg_HPF_cutoff', 50);
+        
         signal_info{end+1} = initSignalStruct('filename',filename,...
             'routine',@processCDScontinuous,...
-            'params',struct('trial_meta',{trial_meta}),...
+            'params',emg_params,...
             'name',cds.emg.Properties.VariableNames(2:end),...
             'label',cds.emg.Properties.VariableNames(2:end),...
-            'type',repmat({'emg'},1,length(emg_signal_names)));
+            'type',repmat({'emg'},1,length(cds.emg.Properties.VariableNames)-1));
     end
 
 
-    if strcmp(meta.task,'multi_gadget')
-        signal_info{end+1} = ...
-            initSignalStruct('filename',[tempfilename,'.ns2'],...
-                'routine',@processNSx,...
-                'params',struct(),...
-                'name','Force_AirDevice',...
-                'label','Force_AirDevice',...
-                'type','generic');
-    end
+%     if strcmp(meta.task,'multi_gadget')
+%         signal_info{end+1} = ...
+%             initSignalStruct('filename',[tempfilename,'.ns2'],...
+%                 'routine',@processNSx,...
+%                 'params',struct(),...
+%                 'name','Force_AirDevice',...
+%                 'label','Force_AirDevice',...
+%                 'type','generic');
+%     end
 
-
-    [TD,td_params,flag] = convertDataToTD(signal_info);
+    params.bin_size = .05;
+    params.emg_LPF_cutoff = 10;
+    params.emg_HPF_cutoff = 50;
+    params.meta = meta;
+    [TD,td_params,flag] = convertDataToTD(signal_info,params);
     save([tempfilename,'_TD.mat'],'TD','-v7.3')
 
     disp(['saved ',tempfilename,'_TD.mat'])

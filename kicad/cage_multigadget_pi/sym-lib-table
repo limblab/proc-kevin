@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name cage_multigadget_pi-rescue)(type Legacy)(uri ${KIPRJMOD}/cage_multigadget_pi-rescue.lib)(options "")(descr ""))
+)

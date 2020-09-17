@@ -61,6 +61,13 @@ lab = 1;
 array_names = 'rightM1';
 
 
+%% Pop left M1 #2
+mapFile = '\\fsmresfiles.fsm.northwestern.edu\fsmresfiles\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\Pop_18E3\Array Map Files\Implant_2020_01\6250-002086\SN 6250-002086.cmp';
+monkey = 'Pop';
+ranBy = 'Kevin';
+task = 'WF';
+lab = 1;
+array_names = 'leftM1_2';
 
 
 %% Add to a cds object
@@ -78,17 +85,19 @@ cds = commonDataStructure;
 file = [dd,filesep,d(ii).name];
 filesplit = strsplit(file,'.');
 if ~exist([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'file')
-    try
+%     try
         cds.file2cds(file,lab,['array', array_names],['monkey', monkey],['task', task],['ranBy', ranBy],'ignoreJumps',['mapFile', mapFile]);
         disp('Created CDS')
-    catch ERROR
-        warning(ERROR)
-        warning('error in creating CDS. Going to save it anyways');
-    end
-    
+%     catch ERROR
+%         warning(ERROR)
+%         warning('error in creating CDS. Going to save it anyways');
+%     end
+%     
     save([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'cds')
 end
 
 disp('Save Completed')
 
 end
+
+beep

@@ -144,7 +144,7 @@ for kk = 1:numel(settings)
     % save([ns6Path,filesep,ns6BaseFilename],'spikes30k','-v7.3')
     spikes30kNev = nevData;
     spikes30kNev.Data.Spikes = spikes30k;
-    saveNev(spikes30kNev,[ns6Path,filesep,ns6NevFilename],'report');
+    saveNEV(spikes30kNev,[ns6Path,filesep,ns6NevFilename],'report');
 
     
     
