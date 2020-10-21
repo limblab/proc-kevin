@@ -1,0 +1,37 @@
+EESchema-LIBRARY Version 2.4
+#encoding utf-8
+#
+# LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue
+#
+DEF LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue U 0 40 Y Y 1 F N
+F0 "U" 0 100 50 H V C CNN
+F1 "LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue" 0 0 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+S -300 -100 400 -300 0 1 0 N
+X LED+ 1 -400 -150 100 R 50 50 1 1 I
+X LED- 2 -400 -250 100 R 50 50 1 1 I
+X Button+ 3 500 -150 100 L 50 50 1 1 I
+X Button- 4 500 -250 100 L 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+# MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue
+#
+DEF MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue U 0 40 Y Y 1 F N
+F0 "U" 0 200 50 H V C CNN
+F1 "MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue" 0 100 50 H V C CNN
+F2 "" 0 0 50 H I C CNN
+F3 "" 0 0 50 H I C CNN
+DRAW
+S 300 -50 -300 -450 0 1 0 N
+X LED+ 1 -400 -150 100 R 50 50 1 1 I
+X LED- 2 -400 -350 100 R 50 50 1 1 O
+X Vin 3 400 -100 100 L 50 50 1 1 I
+X FSR1 4 400 -250 100 L 50 50 1 1 O
+X FSR2 5 400 -400 100 L 50 50 1 1 I
+ENDDRAW
+ENDDEF
+#
+#End Library
