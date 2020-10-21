@@ -81,7 +81,6 @@ clear cds
 clc
 sprintf('Converting file %i of %i',ii,length(d))
 cds = commonDataStructure;
-% file =  'D:\Greyson\20190415\20190415_Greyson_isoWF_003.nev';
 file = [dd,filesep,d(ii).name];
 filesplit = strsplit(file,'.');
 if ~exist([strjoin(filesplit(1:end-1),'.'),'_cds.mat'],'file')

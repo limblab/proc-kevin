@@ -16,7 +16,8 @@ settings = struct(...
     'commonModeAverage',false,...
     'noncausalFilter', false,...
     'filterFreqs', [250, 5000],...
-    'thresholdMult', 4.5);
+    'thresholdMult', 4.5,...
+    'filtThenCAR',false);
 
 % parse the settings struct. to do: implement with name/value pairs, and
 % should probably do some sort of data validation if this is actually going
@@ -70,6 +71,10 @@ end
 if settings.noncausalFilter
     basename = [basename,'_noncausal'];
 end
+if settings.filtThenCAR
+    basename = [basename,'_filtThenCAR'];
+end
+
 
 % prep file names for reading and storage
 ns6NevFilename = [basename,'_thresh',num2str(settings.thresholdMult),'.nev'];
@@ -86,7 +91,7 @@ for jj = 1:numel(ns6List)
     % Cortical Data
 
     % remove the common mode average if desired
-    if settings.commonModeAverage
+    if settings.commonModeAverage && ~settings.filtThenCAR
         % let's try removing the first principal component of all of these
         % suckers
         if jj == 1 % only calculate PCA the first time - keeping things consistent I suppose
@@ -112,6 +117,23 @@ for jj = 1:numel(ns6List)
         ns6File.Data = filter(B,A,ns6File.Data,[],2);
     end
 
+    
+    if settings.commonModeAverage && settings.filtThenCAR
+        % let's try removing the first principal component of all of these
+        % suckers
+        if jj == 1 % only calculate PCA the first time - keeping things consistent I suppose
+            coeff = pca(double(ns6File.Data(:,1:900000)')); % working with 30 seconds of data
+            redCoeff = coeff(:,3:end)*coeff(:,3:end)';
+        end
+%         scores = ns6File.Data'*coeff;
+        ns6File.Data = redCoeff*double(ns6File.Data); % removing the first PC        
+%         avgSig = mean(ns6File.Data,1);
+%         ns6File.Data = double(ns6File.Data) - ones(numChannels,1) * avgSig;
+        clear scores
+    end
+    
+    
+    
     % find the RMS to calculate threshold crossings, but only
     % looking at the first file. We'll compare this with the
     % threshold values used originally later
