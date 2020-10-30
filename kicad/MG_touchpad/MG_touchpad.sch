@@ -1,6 +1,5 @@
 EESchema Schematic File Version 4
-LIBS:MG_touchpad-cache
-EELAYER 29 0
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -263,7 +262,7 @@ U 1 1 5F999A17
 P 8700 2450
 F 0 "J1" V 8572 2630 50  0000 L CNN
 F 1 "Conn_01x04" V 8663 2630 50  0000 L CNN
-F 2 "" H 8700 2450 50  0001 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x04_Pitch2.54mm" H 8700 2450 50  0001 C CNN
 F 3 "~" H 8700 2450 50  0001 C CNN
 	1    8700 2450
 	0    1    1    0   
