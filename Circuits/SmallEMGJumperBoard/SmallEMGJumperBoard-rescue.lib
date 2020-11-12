@@ -1,11 +1,11 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
-# SmallEMGJumperBoard-rescue_Conn_02x18_Odd_Even
+# Conn_02x18_Odd_Even
 #
-DEF SmallEMGJumperBoard-rescue_Conn_02x18_Odd_Even J 0 40 Y N 1 F N
+DEF Conn_02x18_Odd_Even J 0 40 Y N 1 F N
 F0 "J" 50 900 50 H V C CNN
-F1 "SmallEMGJumperBoard-rescue_Conn_02x18_Odd_Even" 50 -1000 50 H V C CNN
+F1 "Conn_02x18_Odd_Even" 50 -1000 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -93,11 +93,11 @@ X Pin_9 9 -200 400 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# SmallEMGJumperBoard-rescue_Conn_02x25_Odd_Even
+# Conn_02x25_Odd_Even
 #
-DEF SmallEMGJumperBoard-rescue_Conn_02x25_Odd_Even J 0 40 Y N 1 F N
+DEF Conn_02x25_Odd_Even J 0 40 Y N 1 F N
 F0 "J" 50 1300 50 H V C CNN
-F1 "SmallEMGJumperBoard-rescue_Conn_02x25_Odd_Even" 50 -1300 50 H V C CNN
+F1 "Conn_02x25_Odd_Even" 50 -1300 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -213,11 +213,11 @@ X Pin_9 9 -200 800 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# SmallEMGJumperBoard-rescue_SamtecReferences
+# SamtecReferences
 #
-DEF SmallEMGJumperBoard-rescue_SamtecReferences U 0 40 Y Y 1 F N
+DEF SamtecReferences U 0 40 Y Y 1 F N
 F0 "U" 0 0 120 H V C CNN
-F1 "SmallEMGJumperBoard-rescue_SamtecReferences" 0 0 120 H V C CNN
+F1 "SamtecReferences" 0 0 120 H V C CNN
 F2 "" 0 0 120 H I C CNN
 F3 "" 0 0 120 H I C CNN
 DRAW

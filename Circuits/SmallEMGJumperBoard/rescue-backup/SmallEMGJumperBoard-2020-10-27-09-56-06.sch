@@ -1,5 +1,40 @@
-EESchema Schematic File Version 4
-EELAYER 30 0
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:SamtecInterconnects
+LIBS:EMGJumperBoardV2-cache
+LIBS:SmallEMGJumperBoard-cache
+EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -14,7 +49,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L SmallEMGJumperBoard-rescue:Conn_02x18_Odd_Even J1
+L Conn_02x18_Odd_Even J1
 U 1 1 5B84264F
 P 1650 2200
 F 0 "J1" H 1700 3100 50  0000 C CNN
@@ -25,7 +60,7 @@ F 3 "" H 1650 2200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L SmallEMGJumperBoard-rescue:Conn_02x25_Odd_Even J2
+L Conn_02x25_Odd_Even J2
 U 1 1 5B842724
 P 4150 2500
 F 0 "J2" H 4200 3800 50  0000 C CNN
@@ -401,7 +436,7 @@ NoConn ~ 10150 2950
 Text Notes 6200 1200 0    120  ~ 0
 References
 $Comp
-L SmallEMGJumperBoard-rescue:SamtecReferences U1
+L SamtecReferences U1
 U 1 1 5B8443C4
 P 6700 1950
 F 0 "U1" H 6700 2100 120 0000 C CNN
@@ -436,7 +471,7 @@ Every Muscle
 Text Notes 5050 4450 0    240  ~ 0
 All Flexors
 $Comp
-L SmallEMGJumperBoard-rescue:Conn_02x25_Odd_Even J3
+L Conn_02x25_Odd_Even J3
 U 1 1 5B844EEF
 P 1650 6150
 F 0 "J3" H 1700 7450 50  0000 C CNN
@@ -641,7 +676,7 @@ SamtecRef3
 Text Label 1950 7350 0    60   ~ 0
 SamtecRef4
 $Comp
-L SmallEMGJumperBoard-rescue:Conn_02x18_Odd_Even J4
+L Conn_02x18_Odd_Even J4
 U 1 1 5B844F79
 P 4100 6050
 F 0 "J4" H 4150 6950 50  0000 C CNN
@@ -652,7 +687,7 @@ F 3 "" H 4100 6050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 4400 5250
-NoConn ~ 3900 5250
+NoConn ~ 3900 5250 NoConn ~ 3900 6950
 Text Label 3400 5350 2    60   ~ 0
 FDP2_1
 Text Label 4900 5350 0    60   ~ 0
@@ -788,7 +823,7 @@ OmneticsRef
 Text Notes 6450 5150 0    120  ~ 0
 References
 $Comp
-L SmallEMGJumperBoard-rescue:SamtecReferences U2
+L SamtecReferences U2
 U 1 1 5B844FFD
 P 6950 5900
 F 0 "U2" H 6950 6050 120 0000 C CNN
