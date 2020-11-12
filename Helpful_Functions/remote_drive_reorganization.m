@@ -34,6 +34,7 @@ end
 
 %% create necessary directories and move all files
 moved_files = {'Filename','name matches creation date'};
+duplicate_files = {'Filename', 'name matches creation date'};
 
 for ii = 1:length(dd)
     fn_split = strsplit(dd(ii).name,'_');
@@ -56,8 +57,12 @@ for ii = 1:length(dd)
     end
     
     try
-        movefile([dd(ii).folder,filesep,dd(ii).name],new_dir);
-        moved_files(end+1,:) = {[dd(ii).folder,filesep,dd(ii).name],rec_date_cmp};
+        if exist([new_dir, filesep, dd(ii).name], 'file') == 2
+            duplicate_files(end+1, :) = {[dd(ii).folder, filesep, dd(ii).name], rec_date_cmp};
+        else
+            movefile([dd(ii).folder,filesep,dd(ii).name],new_dir);
+            moved_files(end+1,:) = {[dd(ii).folder,filesep,dd(ii).name],rec_date_cmp};
+        end
     end
     
 end
@@ -98,10 +103,18 @@ catch
     disp('No files untouched')
 end
 
+try 
+    xlswrite(log_file, duplicate_files, 'Duplicate files')
+catch
+    disp('No duplicate files detected')
+end
+
+
 try
     xlswrite(log_file,moved_files,'Moved Files')
 catch
     disp('No files moved')
 end
     
+end
     
