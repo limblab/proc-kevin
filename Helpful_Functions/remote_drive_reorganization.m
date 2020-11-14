@@ -17,7 +17,7 @@ if ~exist('target_dir')
     target_dir = pwd;
 end
 
-f_ext = {'.nev','.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.plx','.mat','.ccf','.png','.fig','.jpg'};
+f_ext = {'.nev','.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.plx','.mat','.ccf','.png','.fig','.jpg', '.rhd'};
 
 dd = [];
 
@@ -32,6 +32,7 @@ for ii = 1:length(f_ext)
     
 end
 
+dd = fixDirectoryDates(dd); %fill in dates for symlinks
 %% create necessary directories and move all files
 moved_files = {'Filename','name matches creation date'};
 duplicate_files = {'Filename', 'name matches creation date'};
@@ -117,4 +118,17 @@ catch
 end
     
 end
-    
+
+
+function fixedDirectory = fixDirectoryDates(directory)
+for i = 1:length(directory)
+    if isempty(directory(i).date)
+        [~, longString] = system(['dir ' directory(i).folder filesep directory(i).name]);
+        splitString = split(longString);
+        directory(i).date = splitString{16};
+    end
+end
+fixedDirectory = directory;
+end
+
+            
