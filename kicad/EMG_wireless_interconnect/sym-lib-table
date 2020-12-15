@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name EMG_wireless_interconnect_library)(type Legacy)(uri ${KIPRJMOD}/EMG_wireless_interconnect_library.lib)(options "")(descr ""))
+)
