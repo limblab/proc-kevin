@@ -321,11 +321,11 @@ X D 3 100 200 100 D 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# cage_multigadget_pi-rescue_LED_Button_connector-MillerLab_CommonComponents
+# cage_multigadget_pi-rescue_LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue
 #
-DEF cage_multigadget_pi-rescue_LED_Button_connector-MillerLab_CommonComponents U 0 40 Y Y 1 F N
+DEF cage_multigadget_pi-rescue_LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue U 0 40 Y Y 1 F N
 F0 "U" 0 100 50 H V C CNN
-F1 "cage_multigadget_pi-rescue_LED_Button_connector-MillerLab_CommonComponents" 0 0 50 H V C CNN
+F1 "cage_multigadget_pi-rescue_LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue" 0 0 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -337,11 +337,11 @@ X Button- 4 500 -250 100 L 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# cage_multigadget_pi-rescue_MultigadgetDevice-MillerLab_CommonComponents
+# cage_multigadget_pi-rescue_MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue
 #
-DEF cage_multigadget_pi-rescue_MultigadgetDevice-MillerLab_CommonComponents U 0 40 Y Y 1 F N
+DEF cage_multigadget_pi-rescue_MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue U 0 40 Y Y 1 F N
 F0 "U" 0 200 50 H V C CNN
-F1 "cage_multigadget_pi-rescue_MultigadgetDevice-MillerLab_CommonComponents" 0 100 50 H V C CNN
+F1 "cage_multigadget_pi-rescue_MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue" 0 100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
