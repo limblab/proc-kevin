@@ -1,5 +1,5 @@
-function remote_drive_reorganization(base_dir,target_dir)
-%% remote_drive_reorganization(base_dir, target_dir)
+function remote_drive_reorganization(baseDir,targetDir)
+%% remote_drive_reorganization(baseDir, targetDir)
 %
 % Rearranges directories in the limblab/data directory to fit the
 % "monkey/date/*.xyz" data structure. 
@@ -9,68 +9,52 @@ function remote_drive_reorganization(base_dir,target_dir)
 %
 %
 
-if ~exist('base_dir')
-    base_dir = pwd;
+if ~exist('baseDir')
+    baseDir = pwd;
 end
 
-if ~exist('target_dir')
-    target_dir = pwd;
+if ~exist('targetDir')
+    targetDir = pwd;
 end
 
-f_ext = {'.nev','.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.plx','.mat','.ccf','.png','.fig','.jpg', '.rhd'};
 
-dd = [];
+% we're going to use .nev and .plx files as our base to figure out
+% dates, then move all of the other related files.
+f_ext = {'.nev','.plx'};
+%f_ext = {'.nev','.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.plx','.mat','.ccf','.png','.fig','.jpg', '.rhd'};
+
 
 
 %% get a list of files
-for ii = 1:length(f_ext)
-    if isempty(dd)
-        dd = dir([base_dir,filesep,'**',filesep,'*',f_ext{ii}]);
-    else
-        dd = [dd;dir([base_dir,filesep,'**',filesep,'*',f_ext{ii}])];
-    end
-    
-end
 
-dd = fixDirectoryDates(dd); %fill in dates for symlinks
+nevList = listFile(baseDir,'.nev');
+plxList = listFile(baseDir,'.plx');
+
+
 %% create necessary directories and move all files
-moved_files = {'Filename','name matches creation date'};
-duplicate_files = {'Filename', 'name matches creation date'};
+movedFiles = {'Filename','name matches creation date'};
+duplicateFiles = {'Filename', 'name matches creation date'};
 
-for ii = 1:length(dd)
-    fn_split = strsplit(dd(ii).name,'_');
-%     
-%     rec_date_ind = cellfun(@str2num, fn_split, 'UniformOutput',false);
-%     rec_date_ind = ~cell2mat(cellfun(@isempty, rec_date_ind, 'UniformOutput', false));
-%     rec_date = fn_split{rec_date_ind};
-%     
-    create_date = datestr(dd(ii).date,'yyyymmdd');
-    new_dir = [target_dir,filesep,create_date];
-    
-    % want to see if we have consistency in named date v putative creation
-    % date
-    rec_date_cmp = any(strcmpi(fn_split,create_date)) | any(strcmpi(fn_split,datestr(dd(ii).date,'mmddyy')));
-    
-    
-    
-    if ~exist(new_dir,'dir')
-        mkdir(new_dir)
+% first deal with all of the nevs
+for ii = 1:length(nevList) 
+    nev = openNev(nevList{ii},'nomat','nosave','noread') % only want the header info
+    createDate = datestr(nev.MetaTags.DateTime,'yyyymmdd'); % file recording date -- should be independent of sorting etc!
+    currTargetDir = [targetDir,filesep,createDate];
+
+    if ~exist(currTargetDir,'dir') % create it if it doesn't exist
+        mkdir(currTargetDir)
     end
     
-    try
-        if exist([new_dir, filesep, dd(ii).name], 'file') == 2
-            duplicate_files(end+1, :) = {[dd(ii).folder, filesep, dd(ii).name], rec_date_cmp};
-        else
-            movefile([dd(ii).folder,filesep,dd(ii).name],new_dir);
-            moved_files(end+1,:) = {[dd(ii).folder,filesep,dd(ii).name],rec_date_cmp};
-        end
-    end
+    matchFileList = getMatchFiles(nevList{ii},baseDir,'.nev'); % get all of the files with the same name, different extensions
+    matchFileList{end+1} = nevList{ii};
+    
+
     
 end
 
 %% Clean up empty directories
 
-log_file = [base_dir,filesep,'log.xlsx'];
+log_file = [baseDir,filesep,'log.xlsx'];
 
 rem_dirs = {};
 untouch_file = {};
@@ -119,16 +103,49 @@ end
     
 end
 
+%% supporting subfunctions
 
-function fixedDirectory = fixDirectoryDates(directory)
-for i = 1:length(directory)
-    if isempty(directory(i).date)
-        [~, longString] = system(['dir ' directory(i).folder filesep directory(i).name]);
-        splitString = split(longString);
-        directory(i).date = splitString{16};
+% lists out all of the .nev files in the current folder, recursively
+function fileList = listFile(currDir,fileExt)
+    % tack a period on the front if needed
+    if ~contains(fileExt,'.')
+        fileExt = ['.',fileExt];
     end
-end
-fixedDirectory = directory;
+    
+    % check whether pc or *nix
+    if ispc
+        [stat,fileList] = system(['dir /s /b ',currDir,filesep,'*',fileExt]);
+    else
+        [stat,fileList] = system(['ls -R ',currDir,filesep,'*',fileExt]);
+    end
+    
+    fileList = strsplit(fileList); % split by line breaks and tab delimiters
+    fileList = fileList(~cellfun(@isempty,fileList)); % remove any empty entries
+
+    
 end
 
+
+% strips files to just get the "base" filename
+function matchFileList = getMatchFiles(filepath,baseDir,fileExt)
+    % tack a period on the front of the extension if needed
+    if ~contains(fileExt,'.')
+        fileExt = ['.',fileExt];
+    end
+
+    % get the filename without its whole path or extension
+    baseFN = strsplit(filepath,filesep);
+    baseFN = strsplit(baseFN{end},fileExt);
+    baseFN = baseFN{1};
+    
+    % recursively look for files with the same name
+    if ispc
+        [stat,matchFileList] = system(['dir /s /b ',currDir,filesep,'*',baseFN,'.*']);
+    else
+        [stat,matchFileList] = system(['ls -R ',currDir,filesep,'*',baseFN,'.*']);
+    end
+    
+    matchFileList = strsplit(matchFileList); % split by line breaks and tab delimiters
+    matchFileList = matchFileList(~cellfun(@isempty,matchFileList)); % remove any empty entries
+end
             
