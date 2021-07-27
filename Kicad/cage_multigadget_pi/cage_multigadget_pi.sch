@@ -126,12 +126,12 @@ $EndComp
 $Comp
 L power:GND #PWR0103
 U 1 1 5DD82205
-P 2700 4700
-F 0 "#PWR0103" H 2700 4450 50  0001 C CNN
-F 1 "GND" H 2705 4527 50  0000 C CNN
-F 2 "" H 2700 4700 50  0001 C CNN
-F 3 "" H 2700 4700 50  0001 C CNN
-	1    2700 4700
+P 3350 4700
+F 0 "#PWR0103" H 3350 4450 50  0001 C CNN
+F 1 "GND" H 3355 4527 50  0000 C CNN
+F 2 "" H 3350 4700 50  0001 C CNN
+F 3 "" H 3350 4700 50  0001 C CNN
+	1    3350 4700
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -148,13 +148,13 @@ $EndComp
 $Comp
 L power:GND #PWR0105
 U 1 1 5DD844C0
-P 1550 3900
-F 0 "#PWR0105" H 1550 3650 50  0001 C CNN
-F 1 "GND" H 1555 3727 50  0000 C CNN
-F 2 "" H 1550 3900 50  0001 C CNN
-F 3 "" H 1550 3900 50  0001 C CNN
-	1    1550 3900
-	1    0    0    -1  
+P 2300 3700
+F 0 "#PWR0105" H 2300 3450 50  0001 C CNN
+F 1 "GND" H 2150 3600 50  0000 C CNN
+F 2 "" H 2300 3700 50  0001 C CNN
+F 3 "" H 2300 3700 50  0001 C CNN
+	1    2300 3700
+	-1   0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR0106
@@ -181,23 +181,23 @@ $EndComp
 $Comp
 L power:GND #PWR0108
 U 1 1 5DD85905
-P 2550 2850
-F 0 "#PWR0108" H 2550 2600 50  0001 C CNN
-F 1 "GND" H 2555 2677 50  0000 C CNN
-F 2 "" H 2550 2850 50  0001 C CNN
-F 3 "" H 2550 2850 50  0001 C CNN
-	1    2550 2850
+P 3200 2700
+F 0 "#PWR0108" H 3200 2450 50  0001 C CNN
+F 1 "GND" H 3205 2527 50  0000 C CNN
+F 2 "" H 3200 2700 50  0001 C CNN
+F 3 "" H 3200 2700 50  0001 C CNN
+	1    3200 2700
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR0109
 U 1 1 5DD86DF7
-P 1600 1900
-F 0 "#PWR0109" H 1600 1650 50  0001 C CNN
-F 1 "GND" H 1605 1727 50  0000 C CNN
-F 2 "" H 1600 1900 50  0001 C CNN
-F 3 "" H 1600 1900 50  0001 C CNN
-	1    1600 1900
+P 2350 1800
+F 0 "#PWR0109" H 2350 1550 50  0001 C CNN
+F 1 "GND" H 2355 1627 50  0000 C CNN
+F 2 "" H 2350 1800 50  0001 C CNN
+F 3 "" H 2350 1800 50  0001 C CNN
+	1    2350 1800
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -214,38 +214,36 @@ $EndComp
 $Comp
 L Device:R_POT RV2
 U 1 1 5DDB9ACD
-P 2550 2700
-F 0 "RV2" H 2700 2800 50  0000 C CNN
-F 1 "R_POT" H 2700 2550 50  0000 C CNN
-F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 2550 2700 50  0001 C CNN
-F 3 "~" H 2550 2700 50  0001 C CNN
-	1    2550 2700
-	1    0    0    1   
+P 3200 2550
+F 0 "RV2" H 3350 2650 50  0000 C CNN
+F 1 "R_POT" H 3350 2400 50  0000 C CNN
+F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 3200 2550 50  0001 C CNN
+F 3 "~" H 3200 2550 50  0001 C CNN
+	1    3200 2550
+	-1   0    0    1   
 $EndComp
 $Comp
 L Device:R_POT RV3
 U 1 1 5DDC493C
-P 1550 3750
-F 0 "RV3" H 1700 3850 50  0000 C CNN
-F 1 "R_POT" H 1750 3650 50  0000 C CNN
-F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 1550 3750 50  0001 C CNN
-F 3 "~" H 1550 3750 50  0001 C CNN
-	1    1550 3750
-	1    0    0    1   
+P 2300 3550
+F 0 "RV3" H 2450 3650 50  0000 C CNN
+F 1 "R_POT" H 2500 3450 50  0000 C CNN
+F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 2300 3550 50  0001 C CNN
+F 3 "~" H 2300 3550 50  0001 C CNN
+	1    2300 3550
+	-1   0    0    1   
 $EndComp
 $Comp
 L Device:R_POT RV4
 U 1 1 5DDC696E
-P 2700 4550
-F 0 "RV4" H 2850 4650 50  0000 C CNN
-F 1 "R_POT" H 2850 4400 50  0000 C CNN
-F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 2700 4550 50  0001 C CNN
-F 3 "~" H 2700 4550 50  0001 C CNN
-	1    2700 4550
-	1    0    0    1   
+P 3350 4550
+F 0 "RV4" H 3500 4650 50  0000 C CNN
+F 1 "R_POT" H 3500 4400 50  0000 C CNN
+F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 3350 4550 50  0001 C CNN
+F 3 "~" H 3350 4550 50  0001 C CNN
+	1    3350 4550
+	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	1600 1500 1600 1600
 Wire Wire Line
 	1350 1500 1350 1300
 Wire Wire Line
@@ -274,10 +272,9 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21295C.pdf" H 5950 2500 50 
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3300 4050 3450 4050
+	3300 4050 3350 4050
 Wire Wire Line
 	3450 4050 3450 3000
-Connection ~ 3300 4050
 $Comp
 L Connector:USB_B_Micro J1
 U 1 1 5DE7CFB9
@@ -396,7 +393,7 @@ Power Supply
 Text Notes 1950 800  0    50   ~ 0
 OP495
 $Comp
-L cage_multigadget_pi-rescue:MultigadgetDevice-MillerLab_CommonComponents U4
+L cage_multigadget_pi-rescue:MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue U4
 U 1 1 5E2EF314
 P 5400 4050
 F 0 "U4" H 5400 4175 50  0000 C CNN
@@ -407,7 +404,7 @@ F 3 "" H 5400 4050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L cage_multigadget_pi-rescue:MultigadgetDevice-MillerLab_CommonComponents U5
+L cage_multigadget_pi-rescue:MultigadgetDevice-MillerLab_CommonComponents-cage_multigadget_pi-rescue U5
 U 1 1 5E2F637C
 P 5900 5000
 F 0 "U5" H 5900 5125 50  0000 C CNN
@@ -418,7 +415,7 @@ F 3 "" H 5900 5000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U6
+L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue U6
 U 1 1 5E2FDD90
 P 10350 4250
 F 0 "U6" H 10400 4325 50  0000 C CNN
@@ -429,7 +426,7 @@ F 3 "" H 10350 4250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U7
+L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue U7
 U 1 1 5E2FEBB6
 P 10300 5250
 F 0 "U7" H 10350 5325 50  0000 C CNN
@@ -546,26 +543,23 @@ Wire Wire Line
 Wire Wire Line
 	3350 2900 3350 3300
 Wire Wire Line
-	3350 3300 2150 3300
+	3350 3300 2300 3300
 Wire Wire Line
 	3350 2900 4450 2900
-Connection ~ 2150 3300
 Wire Wire Line
-	3150 2200 3350 2200
+	3150 2200 3200 2200
 Wire Wire Line
 	3350 2200 3350 2800
 Wire Wire Line
 	3350 2800 4450 2800
-Connection ~ 3150 2200
 Wire Wire Line
 	3450 2700 3450 1400
 Wire Wire Line
-	3450 1400 2200 1400
+	3450 1400 2350 1400
 Wire Wire Line
 	3450 2700 4450 2700
-Connection ~ 2200 1400
 $Comp
-L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U8
+L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue U8
 U 1 1 5E7FE5B8
 P 8350 4250
 F 0 "U8" H 8400 4325 50  0000 C CNN
@@ -576,7 +570,7 @@ F 3 "" H 8350 4250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents U9
+L cage_multigadget_pi-rescue:LED_Button_connector-MillerLab_CommonComponents-cage_multigadget_pi-rescue U9
 U 1 1 5E7FE5BE
 P 8300 5250
 F 0 "U9" H 8350 5325 50  0000 C CNN
@@ -1000,27 +994,7 @@ Button0LED
 Text Label 9400 5700 2    50   ~ 0
 Button1LED
 Wire Wire Line
-	2200 1400 2200 1750
-Wire Wire Line
-	1750 1750 2200 1750
-Wire Wire Line
-	2550 2300 2550 2550
-Wire Wire Line
-	2700 2700 3150 2700
-Wire Wire Line
-	3150 2200 3150 2700
-Wire Wire Line
-	1550 3400 1550 3600
-Wire Wire Line
-	1700 3750 2150 3750
-Wire Wire Line
-	2150 3300 2150 3750
-Wire Wire Line
-	2700 4150 2700 4400
-Wire Wire Line
-	2850 4550 3300 4550
-Wire Wire Line
-	3300 4050 3300 4550
+	1550 3400 1550 3550
 $Comp
 L power:GND #PWR0138
 U 1 1 5EB2CCBC
@@ -1035,12 +1009,46 @@ $EndComp
 $Comp
 L Device:R_POT RV1
 U 1 1 5DDC4EC4
-P 1600 1750
-F 0 "RV1" H 1750 1850 50  0000 C CNN
-F 1 "R_POT" H 1800 1650 50  0000 C CNN
-F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 1600 1750 50  0001 C CNN
-F 3 "~" H 1600 1750 50  0001 C CNN
-	1    1600 1750
-	1    0    0    1   
+P 2350 1650
+F 0 "RV1" H 2500 1750 50  0000 C CNN
+F 1 "R_POT" H 2550 1550 50  0000 C CNN
+F 2 "Potentiometers:Potentiometer_Trimmer_Bourns_3296Y" H 2350 1650 50  0001 C CNN
+F 3 "~" H 2350 1650 50  0001 C CNN
+	1    2350 1650
+	-1   0    0    1   
 $EndComp
+Wire Wire Line
+	3350 4400 3350 4050
+Connection ~ 3350 4050
+Wire Wire Line
+	3350 4050 3450 4050
+Wire Wire Line
+	2700 4550 3200 4550
+Wire Wire Line
+	2700 4150 2700 4550
+Wire Wire Line
+	2150 3550 1550 3550
+Wire Wire Line
+	2300 3400 2300 3300
+Connection ~ 2300 3300
+Wire Wire Line
+	2300 3300 2150 3300
+Wire Wire Line
+	3200 2400 3200 2200
+Connection ~ 3200 2200
+Wire Wire Line
+	3200 2200 3350 2200
+Wire Wire Line
+	2550 2300 2550 2550
+Wire Wire Line
+	2550 2550 3050 2550
+Wire Wire Line
+	2350 1500 2350 1400
+Connection ~ 2350 1400
+Wire Wire Line
+	2350 1400 2200 1400
+Wire Wire Line
+	2200 1650 1600 1650
+Wire Wire Line
+	1600 1650 1600 1500
 $EndSCHEMATC
