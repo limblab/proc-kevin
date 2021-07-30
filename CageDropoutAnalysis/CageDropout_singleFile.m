@@ -12,6 +12,8 @@
 % Kevin Bodkin
 % September 2019
 % kevinbodkin2017@u.northwestern.edu
+%
+% updated to spit out a stats file July 2021 -- KB
 
 
 %% open the .nev file
@@ -30,7 +32,7 @@ nev.Data.Spikes.TimeStamp = nev.Data.Spikes.TimeStamp(nev.Data.Spikes.Electrode 
 
 %% find dropouts
 clc
-displayGap = '\n-----------------------------------------------------------\n';
+displayGap = '\n-----------------------------------------------------------\n\n';
 fprintf(displayGap)
 fprintf('%s\n%s\n',nevFN,nev.MetaTags.DateTime)
 
@@ -46,13 +48,26 @@ dropoutLengths = dropoutEnds - dropoutStarts; % length in seconds
 percDrop = 100*sum(dropoutLengths)/nev.MetaTags.DataDurationSec; % percentage of total recording time that's a "dropout"
 numDrop = length(dropoutStarts); % number of dropouts
 
-
+% print stats to command window
 fprintf('For threshold length: %0.2f\n',dropoutThreshold)
 fprintf('Total percentage dropped signal: %0.3f%% \n',percDrop);
 fprintf('Number of dropouts: %i \n',numDrop);
 fprintf('Longest dropout length: %0.3f seconds\n',max(dropoutLengths));
 fprintf('Mean dropout length: %0.3f seconds\n',mean(dropoutLengths));
 fprintf(displayGap)
+
+% and do the same for a txt file
+statsFN = strsplit(fn,'.nev');
+statsFN = [statsFN{1},'_dropoutStats.txt'];
+fid = fopen(statsFN,'a');
+fprintf(fid,displayGap);
+fprintf(fid,'For threshold length: %0.2f\n',dropoutThreshold);
+fprintf(fid,'Total percentage dropped signal: %0.3f%% \n',percDrop);
+fprintf(fid,'Number of dropouts: %i \n',numDrop);
+fprintf(fid,'Longest dropout length: %0.3f seconds\n',max(dropoutLengths));
+fprintf(fid,'Mean dropout length: %0.3f seconds\n',mean(dropoutLengths));
+fprintf(fid,displayGap);
+fclose(fid);
 
 %% Plot histograms of the dropout lengths
 
@@ -62,7 +77,7 @@ timeBins = 0:.01:1;
 histogram(dropoutLengths,timeBins,'Normalization','count')
 xlabel('Dropout Length (s)')
 ylabel('Count')
-title(['Dropout lengths between ', num2str(100*dropoutThreshold), ' ms and 1 s'])
+title(['Dropout lengths between ', num2str(1000*dropoutThreshold), ' ms and 1 s'])
 subplot(2,1,2)
 timeBins = 1:.1:10;
 histogram(dropoutLengths,timeBins,'Normalization','count')
@@ -84,3 +99,11 @@ for a = 1:length(ff.Children) % for all axes on the figure
         ax.YLim(2) = 5;
     end
 end
+
+
+
+%% save the file
+figFN = strsplit(fn,'.nev');
+figFN = [figFN{1},'_dropoutHist.png'];
+
+print(ff,figFN,'-dpng')
