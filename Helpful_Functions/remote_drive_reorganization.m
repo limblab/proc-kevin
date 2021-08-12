@@ -88,8 +88,11 @@ scannedDirs = unique(scannedDirs); % to avoid repetition
 
 for ii = 1:numel(scannedDirs)
 
-    sdContents = dir(scannedDirs{ii}); % what's inside of the scanned dir?
-    sdContents = sdContents(3:end); % removing '.' and '..'
+    if ispc
+        [~,sdContents] = system(['dir /b ',baseDir,filesep,scannedDirs{ii}]);
+    else
+        [~,sdContents] = system(['ls ',baseDir,filesep,scannedDirs{ii}]);
+    end
 
     if isempty(sdContents)
         remDirs{end+1} = scannedDirs{ii}; %can we pre-allocate?
@@ -146,9 +149,9 @@ function fileList = listFile(currDir,fileExt)
     
     % check whether pc or *nix
     if ispc
-        [stat,fileList] = system(['dir /s /b ',currDir,filesep,'*',fileExt]);
+       [~,fileList] = system(['dir /s /b ',currDir,filesep,'*',fileExt]);
     else
-       [stat,fileList] = system(['ls -R ', currDir, '| grep \\', fileExt]);  %looking recursively
+       [~,fileList] = system(['ls -R ', currDir, '| grep \\', fileExt]);  %looking recursively
     end
     
   fileList = strsplit(fileList); % split by line breaks and tab delimiters
@@ -172,9 +175,9 @@ function matchFileList = getMatchFiles(filepath,baseDir,fileExt)
     
     % recursively look for files with the same name
     if ispc
-        [stat,matchFileList] = system(['dir /s /b ',baseDir,filesep,'*',baseFN,'.*']);
+        [~,matchFileList] = system(['dir /s /b ',baseDir,filesep,'*',baseFN,'.*']);
     else
-        [stat,matchFileList] = system(['ls -R ',baseDir,filesep,'*',baseFN,'.*']);
+        [~,matchFileList] = system(['ls -R ',baseDir,filesep,'*',baseFN,'.*']);
     end
     
     matchFileList = strsplit(matchFileList); % split by line breaks and tab delimiters
