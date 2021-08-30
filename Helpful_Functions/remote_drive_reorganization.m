@@ -37,6 +37,13 @@ nevList = listFile(baseDir,'.nev'); %need the list to be the full filepath, not 
 plxList = listFile(baseDir,'.plx');
 
 
+if strcmpi(nevList,'File Not Found'); % windows returns FNF, which messes up our later code
+    nevList = {};
+end
+if strcmpi(plxList,'File Not Found'); % windows returns FNF, which messes up our later code
+    plxList = {};
+end
+
 %% create necessary directories and move all files
 movedFileList = struct('FileName',[],'OriginalDirectory',[],'NewPath',[]);
 skippedFileList = struct('FileName',[],'Path',[],'Reason',[]);
@@ -109,8 +116,11 @@ skippedFileList(1) = [];
 for ii = 1:length(plxList)
     try
     tic
-    [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, createDate] = plx_information(plxList{ii})
-    createDate = datestr(createDate,'yyyymmdd');
+    [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, createDate] = plx_information(plxList{ii});
+%     createDate = strsplit(createDate);
+%     createDate = createDate(~cellfun(@isempty,createDate));
+    createDate = datestr(createDate(1:10),'yyyymmdd');
+    plx_close(plxList{ii});
     toc
     currTargetDir = [targetDir,filesep,createDate];
 
@@ -138,11 +148,11 @@ for ii = 1:length(plxList)
         else
             skippedFileList(end+1).FileName = tempFN;
             skippedFileList(end).Path = tempDir;
-            skippedFileList(end).Reason = 'File already exists in target location';
+            skippedFileList(end).Reason = ME.message;
         end
     end
     
-    catch
+    catch ME
         warning(['Unable to work on file ',plxList{ii}])
         % split out the filename 
         tempFN = strsplit(plxList{ii},filesep);
@@ -153,7 +163,7 @@ for ii = 1:length(plxList)
         tempFN = tempFN{end}; % only take the actual filename
         skippedFileList(end+1).FileName = tempFN;
         skippedFileList(end).Path = tempDir;
-        skippedFileList(end).Reason = 'Unknown error -- skipped due to try/catch exception';
+        skippedFileList(end).Reason = ME.message;
     end
     
 end
@@ -210,7 +220,7 @@ end
 %% Spreadsheets with info about the session
 
 save([targetDir,filesep,'fileReorganizationData'],'movedFileList','skippedFileList',...
-    'scannedDirs','remDirs','untouchFile');
+    'scannedDirs','remDirs');
 
     
 end
