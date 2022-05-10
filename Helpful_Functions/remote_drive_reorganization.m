@@ -1,134 +1,273 @@
-function remote_drive_reorganization(base_dir,target_dir)
-%% remote_drive_reorganization(base_dir, target_dir)
+function remote_drive_reorganization(baseDir,targetDir)
+%% remote_drive_reorganization(baseDir, targetDir)
 %
 % Rearranges directories in the limblab/data directory to fit the
 % "monkey/date/*.xyz" data structure. 
 % 
 % -- Inputs --
-%  dd : base directory for the scan. 
-%
-%
+%  baseDir :  base directory for the scan. Not 'dd', right?
+%  targetDir: pretty obvious
+% ----------------------------------------------------------------
+% 
+% From Mac terminal, connect to the VPN then
+% open 'smb://netID:password@fsmresfiles.fsm.northwestern.edu/fsmresfiles/Basic_Sciences/Phys/L_MillerLab'
+% 
+% Then your baseDir is '/Volumes/L_MillerLab/data/etc.'
 
-if ~exist('base_dir')
-    base_dir = pwd;
+
+if ~exist('baseDir')
+    baseDir = pwd;
 end
 
-if ~exist('target_dir')
-    target_dir = pwd;
+if ~exist('targetDir')
+    targetDir = pwd;
 end
 
-f_ext = {'.nev','.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.plx','.mat','.ccf','.png','.fig','.jpg', '.rhd'};
 
-dd = [];
+% we're going to use .nev and .plx files as our base to figure out         %some .plx in Tiki, and probably other old monkeys
+% dates, then move all of the other related files.
+% f_ext = {'.nev','.plx'};
+%f_ext = {'.nev','.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.plx','.mat','.ccf','.png','.fig','.jpg', '.rhd'};
+
 
 
 %% get a list of files
-for ii = 1:length(f_ext)
-    if isempty(dd)
-        dd = dir([base_dir,filesep,'**',filesep,'*',f_ext{ii}]);
-    else
-        dd = [dd;dir([base_dir,filesep,'**',filesep,'*',f_ext{ii}])];
-    end
-    
+
+nevList = listFile(baseDir,'.nev'); %need the list to be the full filepath, not just the .nevs
+plxList = listFile(baseDir,'.plx');
+
+
+if strcmpi(nevList,'File Not Found'); % windows returns FNF, which messes up our later code
+    nevList = {};
+end
+if strcmpi(plxList,'File Not Found'); % windows returns FNF, which messes up our later code
+    plxList = {};
 end
 
-dd = fixDirectoryDates(dd); %fill in dates for symlinks
 %% create necessary directories and move all files
-moved_files = {'Filename','name matches creation date'};
-duplicate_files = {'Filename', 'name matches creation date'};
+movedFileList = struct('FileName',[],'OriginalDirectory',[],'NewPath',[]);
+skippedFileList = struct('FileName',[],'Path',[],'Reason',[]);
+scannedDirs = {};
 
-for ii = 1:length(dd)
-    fn_split = strsplit(dd(ii).name,'_');
-%     
-%     rec_date_ind = cellfun(@str2num, fn_split, 'UniformOutput',false);
-%     rec_date_ind = ~cell2mat(cellfun(@isempty, rec_date_ind, 'UniformOutput', false));
-%     rec_date = fn_split{rec_date_ind};
-%     
-    create_date = datestr(dd(ii).date,'yyyymmdd');
-    new_dir = [target_dir,filesep,create_date];
-    
-    % want to see if we have consistency in named date v putative creation
-    % date
-    rec_date_cmp = any(strcmpi(fn_split,create_date)) | any(strcmpi(fn_split,datestr(dd(ii).date,'mmddyy')));
-    
-    
-    
-    if ~exist(new_dir,'dir')
-        mkdir(new_dir)
+%%
+% first deal with all of the nevs
+for ii = 1:length(nevList)
+    try
+    tic
+    nev = openNEV(nevList{ii},'nomat','nosave','noread'); % only want the header info. Issue: In a folder with sorted .nev, it's going to re-open the .nev unnecessarily
+    toc
+    createDate = datestr(nev.MetaTags.DateTime,'yyyymmdd'); % file recording date -- should be independent of sorting etc!
+    currTargetDir = [targetDir,filesep,createDate];
+
+    if ~exist(currTargetDir,'dir') % create it if it doesn't exist
+        mkdir(currTargetDir)
     end
     
-    try
-        if exist([new_dir, filesep, dd(ii).name], 'file') == 2
-            duplicate_files(end+1, :) = {[dd(ii).folder, filesep, dd(ii).name], rec_date_cmp};
+    
+    matchFileList = getMatchFiles(nevList{ii},baseDir,'.nev'); % get all of the files with the same name, different extensions
+    
+    for jj = 1:length(matchFileList) % get all of the matching files and move them over
+        tempFN = strsplit(matchFileList{jj},filesep);
+        tempDir = strjoin(tempFN(1:end-1),filesep); % get the directory name
+        if strcmpi(tempDir(1),filesep) % to return the leading filesep for shared drive addresses in windows
+            tempDir = [filesep,tempDir];
+        end
+        tempFN = tempFN{end}; % only take the actual filename
+        targetFN = [currTargetDir,filesep,tempFN]; % get the future name of the file
+        if ~exist(targetFN,'file')
+            movefile(matchFileList{jj},targetFN)
+            movedFileList(end+1).FileName = tempFN;
+            movedFileList(end).OriginalDirectory = tempDir;
+            movedFileList(end).NewPath = targetFN;
+%             movedFileList(end,2).NewPath = targetFN;
+%             movedFileList{end+1} = {matchFileList{jj},targetFN};
+            scannedDirs{end+1} = tempDir;
         else
-            movefile([dd(ii).folder,filesep,dd(ii).name],new_dir);
-            moved_files(end+1,:) = {[dd(ii).folder,filesep,dd(ii).name],rec_date_cmp};
+            skippedFileList(end+1).FileName = tempFN;
+            skippedFileList(end).Path = tempDir;
+            skippedFileList(end).Reason = 'File already exists in target location';
+%             skippedFileList(end+1) = cell2table({tempFN, 'File Already Exists in target location'});
         end
     end
     
+    catch
+        warning(['Unable to work on file ',nevList{ii}])
+        % split out the filename 
+        tempFN = strsplit(nevList{ii},filesep);
+        tempDir = strjoin(tempFN(1:end-1),filesep); % get the directory name
+        if strcmpi(tempDir(1),filesep) % to return the leading filesep for shared drive addresses in windows
+            tempDir = [filesep,tempDir];
+        end
+        tempFN = tempFN{end}; % only take the actual filename
+        skippedFileList(end+1).FileName = tempFN;
+        skippedFileList(end).Path = tempDir;
+        skippedFileList(end).Reason = 'Unknown error -- skipped due to try/catch exception';
+    end
+    
 end
+
+% because row #1 is empty
+movedFileList(1) = [];
+skippedFileList(1) = [];
+
+
+%% Now for the plx files
+
+for ii = 1:length(plxList)
+    try
+    tic
+    [~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, ~, createDate] = plx_information(plxList{ii});
+%     createDate = strsplit(createDate);
+%     createDate = createDate(~cellfun(@isempty,createDate));
+    createDate = datestr(createDate(1:10),'yyyymmdd');
+    plx_close(plxList{ii});
+    toc
+    currTargetDir = [targetDir,filesep,createDate];
+
+    if ~exist(currTargetDir,'dir') % create it if it doesn't exist
+        mkdir(currTargetDir)
+    end
+    
+    
+    matchFileList = getMatchFiles(plxList{ii},baseDir,'.plx'); % get all of the files with the same name, different extensions
+    
+    for jj = 1:length(matchFileList) % get all of the matching files and move them over
+        tempFN = strsplit(matchFileList{jj},filesep);
+        tempDir = strjoin(tempFN(1:end-1),filesep); % get the directory name
+        if strcmpi(tempDir(1),filesep) % to return the leading filesep for shared drive addresses in windows
+            tempDir = [filesep,tempDir];
+        end
+        tempFN = tempFN{end}; % only take the actual filename
+        targetFN = [currTargetDir,filesep,tempFN]; % get the future name of the file
+        if ~exist(targetFN,'file')
+            movefile(matchFileList{jj},targetFN)
+            movedFileList(end+1).FileName = tempFN;
+            movedFileList(end).OriginalDirectory = tempDir;
+            movedFileList(end).NewPath = targetFN;
+            scannedDirs{end+1} = tempDir;
+        else
+            skippedFileList(end+1).FileName = tempFN;
+            skippedFileList(end).Path = tempDir;
+            skippedFileList(end).Reason = ME.message;
+        end
+    end
+    
+    catch ME
+        warning(['Unable to work on file ',plxList{ii}])
+        % split out the filename 
+        tempFN = strsplit(plxList{ii},filesep);
+        tempDir = strjoin(tempFN(1:end-1),filesep); % get the directory name
+        if strcmpi(tempDir(1),filesep) % to return the leading filesep for shared drive addresses in windows
+            tempDir = [filesep,tempDir];
+        end
+        tempFN = tempFN{end}; % only take the actual filename
+        skippedFileList(end+1).FileName = tempFN;
+        skippedFileList(end).Path = tempDir;
+        skippedFileList(end).Reason = ME.message;
+    end
+    
+end
+
+
+
+
+
 
 %% Clean up empty directories
 
-log_file = [base_dir,filesep,'log.xlsx'];
+% looks through all of the directories that had .nev files that were moved,
+% then looks inside of those directories to see what wasn't moved.
+%
+% Will also remove any empty directories that are in that list
 
-rem_dirs = {};
-untouch_file = {};
+remDirs = {}; % a list of the directories we end up deleting
 
-scanned_dirs = unique({dd.folder});
+scannedDirs = unique(scannedDirs); % to avoid repetition
 
-for ii = 1:numel(scanned_dirs)
-    sd_info = dir(scanned_dirs{ii});
-    sd_info = sd_info(3:end);
-    if isempty(sd_info)
-        rem_dirs{end+1} = scanned_dirs{ii};
-        rmdir(scanned_dirs{ii})
+for ii = 1:numel(scannedDirs)
+
+    % get contents of all scanned directories
+    if ispc
+        [~,sdContents] = system(['dir /b ',scannedDirs{ii}]);
     else
-        sd_info = sd_info(~[sd_info.isdir]);
-        untouch_file(end+1:end+numel(sd_info)) = {sd_info.name};
+        [~,sdContents] = system(['ls ',scannedDirs{ii}]);
     end
+
+    sdContents = strsplit(sdContents,'\n','CollapseDelimiters',true); % splitting long string into filenames
+    sdContents = sdContents(~cellfun(@isempty,sdContents)); % get rid of empty cells
+    
+    if isempty(sdContents)
+        remDirs{end+1} = scannedDirs{ii}; %can we pre-allocate?
+        rmdir(scannedDirs{ii})             %remove empty folder
+    else
+        for jj = 1:numel(sdContents) % fill out the skipped file list for all remaining files
+            ext = strsplit(sdContents{jj},'.');
+            ext = ext{end};
+            if ~strcmpi('nev',ext)
+                tempFN = strsplit(sdContents{jj},filesep);
+                tempFN = tempFN{end};
+                skippedFileList(end+1).FileName = tempFN;
+                skippedFileList(end).Path = scannedDirs{ii};
+                skippedFileList(end).Reason = 'No associated nev found';
+            end
+        end
+    end
+    
     
 end
 
 
+%% Spreadsheets with info about the session
 
-try
-    xlswrite(log_file,rem_dirs,'Removed Directories')
-catch
-    disp('No directories removed')
+save([targetDir,filesep,'fileReorganizationData'],'movedFileList','skippedFileList',...
+    'scannedDirs','remDirs');
+
+    
 end
 
-try
-    xlswrite(log_file,untouch_file,'Untouched Files')
-catch
-    disp('No files untouched')
-end
+%% supporting subfunctions
 
-try 
-    xlswrite(log_file, duplicate_files, 'Duplicate files')
-catch
-    disp('No duplicate files detected')
-end
+% lists out all of the .nev files in the current folder, recursively
+function fileList = listFile(currDir,fileExt)
+    % tack a period on the front if needed
+    if ~any(strfind(fileExt,'.'))
+        fileExt = ['.',fileExt];
+    end
+    
+    % check whether pc or *nix
+    if ispc
+       [~,fileList] = system(['dir /s /b ',currDir,filesep,'*',fileExt]);
+    else
+       [~,fileList] = system(['ls -R ', currDir, '| grep \\', fileExt]);  %looking recursively
+    end
+    
+  fileList = strsplit(fileList,'\n','CollapseDelimiters',true); % split by line breaks and tab delimiters
+  fileList = fileList(~cellfun(@isempty,fileList)); % remove any empty entries
 
-
-try
-    xlswrite(log_file,moved_files,'Moved Files')
-catch
-    disp('No files moved')
-end
     
 end
 
 
-function fixedDirectory = fixDirectoryDates(directory)
-for i = 1:length(directory)
-    if isempty(directory(i).date)
-        [~, longString] = system(['dir ' directory(i).folder filesep directory(i).name]);
-        splitString = split(longString);
-        directory(i).date = splitString{16};
+%% looks for filenames with the same "base" filename
+function matchFileList = getMatchFiles(filepath,baseDir,fileExt)
+    % tack a period on the front of the extension if needed
+    if ~any(strfind(fileExt,'.'))
+        fileExt = ['.',fileExt];
     end
-end
-fixedDirectory = directory;
-end
 
+    % get the filename without its whole path or extension
+    baseFN = strsplit(filepath,filesep);
+    baseFN = strsplit(baseFN{end},fileExt);
+    baseFN = baseFN{1};
+    
+    % recursively look for files with the same name
+    if ispc
+        [~,matchFileList] = system(['dir /s /b ',baseDir,filesep,'*',baseFN,'*.*']);
+    else
+        [~,matchFileList] = system(['ls -R ',baseDir,filesep,'*',baseFN,'*.*']);
+    end
+    
+    matchFileList = strsplit(matchFileList,'\n','CollapseDelimiters',true); % split by line breaks and tab delimiters
+    matchFileList = matchFileList(~cellfun(@isempty,matchFileList)); % remove any empty entries
+end
             
