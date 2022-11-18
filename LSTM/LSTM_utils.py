@@ -202,7 +202,7 @@ def LSTM_preprocess(firing_train: dict, EMG_train: dict, firing_test: dict, EMG_
 # -------------------------------------------------------------------
 
 # VAF plotting
-def plot_VAFs(train_VAFs: dict, test_VAFs: dict, muscles):    
+def plot_VAFs(train_VAFs: dict, test_VAFs: dict, muscles, sup_title=None):    
     
     # Plotting VAFs -- comparing the training sets and testing sets
     fig_vaf, ax_vaf = plt.subplots(ncols = 2, constrained_layout=True)
@@ -225,7 +225,6 @@ def plot_VAFs(train_VAFs: dict, test_VAFs: dict, muscles):
     ax_vaf[1].set_xticks(i_muscles + .4)
     ax_vaf[1].set_xticklabels(muscles)
     ax_vaf[1].set_title('Testing Datasets')
-
 
 
     # For each bar in the chart, add a text label.
@@ -256,6 +255,12 @@ def plot_VAFs(train_VAFs: dict, test_VAFs: dict, muscles):
         # turn off the spines
         for spine in ['right','top','bottom','left']:
             chart.spines[spine].set_visible(False)
+
+        # give the entire figure a title if one was provided
+        if sup_title:
+            fig_vaf.suptitle(sup_title)
+
+
 
 
 # plot the recorded vs predicted values. Takes in dicts
