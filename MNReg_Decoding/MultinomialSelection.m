@@ -53,11 +53,13 @@ else
     wCats = wCats/sum(wCats);      % renormalize so all weights sum to 1
 
     % extract velocity predictions, weight them by wCats, then sum
-    Vp = sum( vertcat(DPars.CatList{:,2}).*wCats, 1)';
+%     Vp = sum( vertcat(DPars.CatList{:,2}).*wCats, 1)';
+%     Vp = cell2mat(DPars.CatList(:,2))'*wCats;
+    Vp = wCats' * cell2mat(DPars.CatList(:,2));
 
     % integrate to find the next cursor state
-    X(1:2,1) = X0(1:2) + DPars.dt*Vp;
-    X(3:4,1) = Vp;
+    X(1:2) = X0(1:2) + DPars.dt*Vp;
+    X(3:4) = Vp;
 
 end
 
@@ -66,7 +68,7 @@ end
 
 % changed to 50,-50 for our screen (KLB). Could also just have a
 % multiplier to adjust some sort of gain, but whatever.
-X(1:2) = max(-50,min(50,X(1:2)));
+X(1:2) = max(-20,min(20,X(1:2)));
 
 
 

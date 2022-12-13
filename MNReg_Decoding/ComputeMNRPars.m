@@ -31,8 +31,8 @@ function DPars = ComputeMNRPars(NCell,XCell,dt)
 %
 
 %% Stack N and X into [obs x neurons] and [obs x state] matrices
-N = [NCell{:}]';
-X = [XCell{:}]'; 
+N = cell2mat(NCell);
+X = cell2mat(XCell); 
 ns = size(X,1);     % number of samples
 
 
@@ -120,7 +120,7 @@ end
 
 %% Compute multinomial regression to velocity categories
 % translate human-readible categories into category numbers
-CatListIX = cellfun(@(u) find(strcmp(u,CatList(:,1))),targetCat)';
+CatListIX = cellfun(@(u) find(strcmp(u,CatList(:,1))),targetCat);
 
 % solve the multinomial regression problem with ANNs (since mnrfit is slow)
 % swap category list into ANN target arrangement
