@@ -1,10 +1,13 @@
-function DPars = ComputeMNRPars(NCell,XCell,dt)
+function DPars = ComputeMNRPars(Neur_Cell,Pos_Cell,dt, varargin)
 % SUPPORT FUNCTION to compute multinomial regression parameters from calibration data
 %
 % DPars = ComputeVKFPars(NCell,XCell,dt)
 %
-% NCell and XCell will have all the samples of the state and neural data,
+% Neur_Cell and Pos_Cell will have all the samples of the state and neural data,
 % each separated into a cell corrisponding to their calibration trial. 
+%
+% varargin:         We can either have the categories input, or the number
+%                   of categories per velocity direction. 
 %
 %
 % DPars output is a struct of decoder parameters, 
@@ -22,6 +25,7 @@ function DPars = ComputeMNRPars(NCell,XCell,dt)
 %
 %
 %
+%
 % ZC Danziger Jul 2022
 %
 % Edits:
@@ -29,11 +33,15 @@ function DPars = ComputeMNRPars(NCell,XCell,dt)
 % preprocessing to avoid dimensional inconsistency errors when training the
 % decoder and some neurons do not fire.
 %
+% K Bodkin Dec 2022:
+%       1. Changing the loading process to allow different trial lengths
+%       2. Updating state classification definition to be the actual
+%           velocity
 
 %% Stack N and X into [obs x neurons] and [obs x state] matrices
-N = cell2mat(NCell);
-X = cell2mat(XCell); 
-ns = size(X,1);     % number of samples
+Neur = cell2mat(Neur_Cell);
+Pos = cell2mat(Pos_Cell); 
+ns = size(Pos,1);     % number of samples
 
 
 %% Prepare parameters for the decoder and categories
@@ -41,81 +49,79 @@ ns = size(X,1);     % number of samples
 speedScale = 0.7;   % ~mean of forced cursor velocity
 % category mixing coefficient (online use only)
 mixCat = 0.85;
-% list of possible categories into which to classify all states, listed as
-% [cardinal direction][fast/slow/rest]
-% CatList = {'Nf', [0 1];
-%            'Ef', [1 0];
-%            'Sf', [0 -1];
-%            'Wf', [-1 0];
-%            'Or', [0 0];
-%            'Cr', [0 0] };
-CatList = {'Nf', [0 1];
-           'Ns', [0 0.5];
-           'Ef', [1 0];
-           'Es', [0.5 0];
-           'Sf', [0 -1];
-           'Ss', [0 -0.5];
-           'Wf', [-1 0];
-           'Ws', [-0.5 0];
-           'Cr', [0 0] };
-
 
 
 
 %% Partition state information into target categories
-% divide each trial into segments for categorization
-% (hard coded for if/else ladder divisions)
-trialDiv = 5;
-% all distances from center
-distFromCntr = sqrt(sum(X(:,1:2).^2,2));    
-% the trialDiv divisions at which this distance is categorized
-[~, ~, bin] = histcounts(distFromCntr,linspace(0,max(distFromCntr),trialDiv+1));
+% We'll just use the velocity of the cursor, and divide into the number of
+% planned 
 
-% assign each sample to a category
-targetCat = cell(ns,1);
-for k=1:ns
-    if bin(k)==1
-        % resting in center
-        targetCat{k} = 'Cr';
-    elseif bin(k)==5 && X(k,2)>0
-        % stoping on north target
-        targetCat{k} = 'Ns'; %'Or';
-    elseif bin(k)==3 && X(k,2)>0
-        % fast speed moving north
-        targetCat{k} = 'Nf';
-    elseif (bin(k)==2 || bin(k)==4) && X(k,2)>0
-        % slow speed moving north
-        targetCat{k} = 'Ns'; %'Nf';
-    elseif bin(k)==5 && X(k,1)>0
-        % stoping on east target
-        targetCat{k} = 'Es'; %'Or';
-    elseif bin(k)==3 && X(k,1)>0
-        % fast speed moving east
-        targetCat{k} = 'Ef';
-    elseif (bin(k)==2 || bin(k)==4) && X(k,1)>0
-        % slow speed moving east
-        targetCat{k} = 'Es'; %'Ef';
-    elseif bin(k)==5 && X(k,2)<0
-        % stoping on south target
-        targetCat{k} = 'Ss'; %'Or';
-    elseif bin(k)==3 && X(k,2)<0
-        % fast speed moving south
-        targetCat{k} = 'Sf';
-    elseif (bin(k)==2 || bin(k)==4) && X(k,2)<0
-        % slow speed moving south
-        targetCat{k} = 'Ss'; %'Sf';
-    elseif bin(k)==5 && X(k,1)<0
-        % stoping on west target
-        targetCat{k} = 'Ws'; %'Or';
-    elseif bin(k)==3 && X(k,1)<0
-        % fast speed moving west
-        targetCat{k} = 'Wf';
-    elseif (bin(k)==2 || bin(k)==4) && X(k,1)<0
-        % slow speed moving west
-        targetCat{k} = 'Ws'; %'Wf';
+num_dirs = 8; % for 8 target directions
+dir_splits = 2; % two states (speeds) per direction
+
+for varg_i  = 1:2:nargin
+    if strcmpi(varargin{varg_i},'num_dirs')
+        num_dirs = varargin{varg_i+1};
+    elseif strcmpi(varargin{varg_i},'dir_splits')
+        dir_splits = varargin{varg_i+1};
     end
-
 end
+
+vels = diff(Pos)/dt; % first order vel estimate
+speed = sqrt(vels(:,1)**2 + vels(:,2)**2); % 
+
+% 
+% trialDiv = 5;
+% % all distances from center
+% distFromCntr = sqrt(sum(X(:,1:2).^2,2));    
+% % the trialDiv divisions at which this distance is categorized
+% [~, ~, bin] = histcounts(distFromCntr,linspace(0,max(distFromCntr),trialDiv+1));
+% 
+% % assign each sample to a category
+% targetCat = cell(ns,1);
+% for k=1:ns
+%     if bin(k)==1
+%         % resting in center
+%         targetCat{k} = 'Cr';
+%     elseif bin(k)==5 && X(k,2)>0
+%         % stoping on north target
+%         targetCat{k} = 'Ns'; %'Or';
+%     elseif bin(k)==3 && X(k,2)>0
+%         % fast speed moving north
+%         targetCat{k} = 'Nf';
+%     elseif (bin(k)==2 || bin(k)==4) && X(k,2)>0
+%         % slow speed moving north
+%         targetCat{k} = 'Ns'; %'Nf';
+%     elseif bin(k)==5 && X(k,1)>0
+%         % stoping on east target
+%         targetCat{k} = 'Es'; %'Or';
+%     elseif bin(k)==3 && X(k,1)>0
+%         % fast speed moving east
+%         targetCat{k} = 'Ef';
+%     elseif (bin(k)==2 || bin(k)==4) && X(k,1)>0
+%         % slow speed moving east
+%         targetCat{k} = 'Es'; %'Ef';
+%     elseif bin(k)==5 && X(k,2)<0
+%         % stoping on south target
+%         targetCat{k} = 'Ss'; %'Or';
+%     elseif bin(k)==3 && X(k,2)<0
+%         % fast speed moving south
+%         targetCat{k} = 'Sf';
+%     elseif (bin(k)==2 || bin(k)==4) && X(k,2)<0
+%         % slow speed moving south
+%         targetCat{k} = 'Ss'; %'Sf';
+%     elseif bin(k)==5 && X(k,1)<0
+%         % stoping on west target
+%         targetCat{k} = 'Ws'; %'Or';
+%     elseif bin(k)==3 && X(k,1)<0
+%         % fast speed moving west
+%         targetCat{k} = 'Wf';
+%     elseif (bin(k)==2 || bin(k)==4) && X(k,1)<0
+%         % slow speed moving west
+%         targetCat{k} = 'Ws'; %'Wf';
+%     end
+% 
+% end
 
 
 %% Compute multinomial regression to velocity categories
@@ -127,10 +133,10 @@ CatListIX = cellfun(@(u) find(strcmp(u,CatList(:,1))),targetCat);
 targs = zeros(size(CatList,1),length(CatListIX));
 for k=1:length(CatListIX), targs(CatListIX(k),k) = 1; end
 % net setup
-softNet = PrepareSoftNet(size(N,2));
+softNet = PrepareSoftNet(size(Neur,2));
 
 % train
-softNet = train(softNet,N',targs);
+softNet = train(softNet,Neur',targs);
 
 % reproduce results by hand for export [softmax( W2*(W1*u+b1)+b2 )]
 A0 = softNet.LW{2,1}*softNet.IW{1};             % parameter mapping matrix

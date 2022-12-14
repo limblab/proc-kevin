@@ -7,10 +7,10 @@ monkey = 'Pancake'; % monkey name
 task = 'WM'; % task
 array_name = 'left_M1';
 ran_by = 'KLB'; % who recorded this?
-lab = 6; % upstairs
-bin_width = .05; % 50 ms
+lab = 1; % upstairs
+bin_width = .001; % 50 ms
 sorted = 0;
-requires_raw_emg = 1; % are we recording EMG here?
+requires_raw_emg = 0; % are we recording EMG here?
 
 params = struct(...
     'monkey_name',monkey,...
@@ -24,8 +24,7 @@ params = struct(...
 
 
 %% choosing the file to use
-file_name = '20221201_Pancake_WM_001.nev'; % path to training .nev
-base_dir = 'C:\data\Pancake\20221201\';
+[file_name,base_dir] = uigetfile('*.nev');
 
 map_dir = 'Z:\limblab\lab_folder\Animal-Miscellany\Pancake_20K2\Surgeries\20210713_Pancake_LeftM1\';
 map_name = 'SN 6250-002468 array 1059-12.cmp';
@@ -36,6 +35,8 @@ base_name = strsplit(file_name,'.nev');
 save_name = strcat(save_dir, base_name{1}, '_xds.mat');
 save(save_name,'xds');
 
+disp('XDS created and saved')
+
 %% parse the xds data
 %
 % We have to pull the cortical and cursor data out from the xds, and
@@ -44,62 +45,16 @@ save(save_name,'xds');
 % To start we'll just use the get_rewarded_trials function and see if
 % that's sufficient. If not I can write something new that can take care
 % of it.
-start_time = 'start_time';
-[trial_spike_counts, trial_EMG, trial_force, trial_kin, trial_curs, trial_tgt_pos] = ...
+
+% start_time = 'start_time';
+start_time = 'gocue_time';
+[trial_spike_counts, ~, ~, ~, trial_curs, trial_tgt_pos] = ...
     get_rewarded_trials(xds, start_time);
 
-%% clip all of the trials to run the same length
-%
-min_trial_length = 1000;
-[trial_lengths,n_neurons] = cellfun(@size,trial_spike_counts); 
-max_trial_length = max(trial_lengths);
 
-% find the average number of neurons -- should be the same for all trials
-n_neurons = int32(mean(n_neurons));
-
-
-% zero padding
-padded_trial_spike_counts = trial_spike_counts;
-padded_trial_curs = trial_curs(:,1); % just the cursor location for now
-for ii = 1:numel(trial_spike_counts)
-    trial_size = size(padded_trial_spike_counts{ii});
-    if trial_size(1) < max_trial_length
-        padded_trial_spike_counts{ii} = [padded_trial_spike_counts{ii}; zeros(max_trial_length-trial_size(1),trial_size(2))];
-    end
-end
-
-
-% 90th percentile
-nine_perc = int32(quantile(trial_lengths,.9));
-perc_trial_spike_counts = trial_spike_counts;
-perc_trial_curs = trial_curs(:,1); % just the cursor location for now
-for ii = 1:numel(trial_spike_counts)
-    if trial_lengths(ii) < nine_perc
-        perc_trial_spike_counts{ii} = [perc_trial_spike_counts{ii}; zeros(nine_perc-trial_lengths(ii),n_neurons)];
-        perc_trial_curs{ii} = [perc_trial_curs{ii}; zeros(nine_perc-trial_lengths(ii),2)];
-    else
-        perc_trial_spike_counts{ii} = perc_trial_spike_counts{ii}(1:nine_perc,:);
-        perc_trial_curs{ii} = perc_trial_curs{ii}(1:nine_perc,:);
-    end
-end
-
-
-% % adjust everything to the length of 50%
-% mean_length = int(mean(trial_lengths)); % what is the mean trial length?
-% stretch_trial_spike_counts = trial_spike_counts;
-% stretch_trial_curs = trial_curs(:,1);
-% for ii = 1:numel(trial_spike_counts)
-%     resample
-
-
-%% which trial type to we want to use to train?
-% 90th percentile, with zero padding
-use_neur = perc_trial_spike_counts;
-use_curs = perc_trial_curs;
-
-% % resample everything to match 
-% use_neur = stretch_trial_spike_counts;
-% use_curs = stretch_trial_curs;
+%% Clip away anything unwanted from the trial
+% for example, do we want to remove periods after the monkey has gotten
+% to the target?
 
 
 %% Naive training
@@ -116,7 +71,7 @@ train_inds = trial_order(1:train_cutoff); % use P training trials
 
 % % get the model from ZD's code
 % dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,1), xds.bin_width); 
-dpars_naive = ComputeMNRPars(perc_trial_spike_counts(train_inds), perc_trial_curs(train_inds,1), xds.bin_width); 
+dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,1), xds.bin_width, 'num_dirs', 2); 
 
 
 disp('decoder built')
@@ -134,7 +89,9 @@ fopen(u); % and open it
 
 
 % initialize the cerebus
-rec_dir = uigetdir('C:','Recording directory'); % where are we recording?
+if ~exist('rec_dir','variable')
+    rec_dir = uigetdir('C:','Recording directory'); % where are we recording?
+end
 rec_name = strcat(rec_dir,filesep,datestr(now,'YYYYmmdd_hhMM'), '_', monkey, '_', task, '_');
 cbmex('open'); % connect to cerebus
 cbmex('fileconfig',rec_name,'',0); % initialize file storage
