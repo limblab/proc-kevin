@@ -4,7 +4,7 @@
 % conversions
 
 monkey = 'Pancake'; % monkey name
-task = 'WM'; % task
+task = 'WS'; % task
 array_name = 'left_M1';
 ran_by = 'KLB'; % who recorded this?
 lab = 1; % upstairs
@@ -28,7 +28,7 @@ params = struct(...
 
 map_dir = 'Z:\limblab\lab_folder\Animal-Miscellany\Pancake_20K2\Surgeries\20210713_Pancake_LeftM1\';
 map_name = 'SN 6250-002468 array 1059-12.cmp';
-save_dir = 'C:\Users\limblab\Downloads';
+save_dir = 'D:\Kevin\';
 
 xds = raw_to_xds(base_dir, file_name, map_dir, map_name, params);
 base_name = strsplit(file_name,'.nev');
@@ -46,15 +46,10 @@ disp('XDS created and saved')
 % that's sufficient. If not I can write something new that can take care
 % of it.
 
-% start_time = 'start_time';
-start_time = 'gocue_time';
+start_time = 'start_time';
+% start_time = 'gocue_time';
 [trial_spike_counts, ~, ~, ~, trial_curs, trial_tgt_pos] = ...
     get_rewarded_trials(xds, start_time);
-
-
-%% Clip away anything unwanted from the trial
-% for example, do we want to remove periods after the monkey has gotten
-% to the target?
 
 
 %% Naive training
@@ -70,8 +65,7 @@ train_cutoff = floor(total_trials*train_perc);
 train_inds = trial_order(1:train_cutoff); % use P training trials
 
 % % get the model from ZD's code
-% dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,1), xds.bin_width); 
-dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,1), xds.bin_width, 'num_dirs', 2); 
+dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,2), xds.bin_width, 'num_dirs', 2); 
 
 
 disp('decoder built')

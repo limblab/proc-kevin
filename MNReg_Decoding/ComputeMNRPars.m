@@ -1,7 +1,7 @@
-function DPars = ComputeMNRPars(Neur_Cell,Pos_Cell,dt, varargin)
+function DPars = ComputeMNRPars(Neur_Cell,Vel_Cell,dt, varargin)
 % SUPPORT FUNCTION to compute multinomial regression parameters from calibration data
 %
-% DPars = ComputeVKFPars(NCell,XCell,dt)
+% DPars = ComputeMNPars(Neur_Cell, Pos_Cell, dt, varargin)
 %
 % Neur_Cell and Pos_Cell will have all the samples of the state and neural data,
 % each separated into a cell corrisponding to their calibration trial. 
@@ -40,8 +40,8 @@ function DPars = ComputeMNRPars(Neur_Cell,Pos_Cell,dt, varargin)
 
 %% Stack N and X into [obs x neurons] and [obs x state] matrices
 Neur = cell2mat(Neur_Cell);
-Pos = cell2mat(Pos_Cell); 
-ns = size(Pos,1);     % number of samples
+Vel = cell2mat(Vel_Cell); 
+ns = size(Vel,1);     % number of samples
 
 
 %% Prepare parameters for the decoder and categories
@@ -57,9 +57,9 @@ mixCat = 0.85;
 % planned 
 
 num_dirs = 8; % for 8 target directions
-dir_splits = 2; % two states (speeds) per direction
+dir_splits = 2; % number of states (speeds) per direction
 
-for varg_i  = 1:2:nargin
+for varg_i  = 1:2:numel(varargin)
     if strcmpi(varargin{varg_i},'num_dirs')
         num_dirs = varargin{varg_i+1};
     elseif strcmpi(varargin{varg_i},'dir_splits')
@@ -67,8 +67,27 @@ for varg_i  = 1:2:nargin
     end
 end
 
-vels = diff(Pos)/dt; % first order vel estimate
-speed = sqrt(vels(:,1)**2 + vels(:,2)**2); % 
+% start with x only, to make the coding faster
+quants = quantile(Vel(:,1),[.01, .05, .95, .99]); % divide the x velocity
+class_def = [quants(1:2),0,quants(3:4)]; % create the classes
+class_compare = repmat(class_def,size(Vel,1),1); % for categorizing each sample
+
+% classify each sample
+[~,CatListIx] = min(abs(repmat(Vel(:,1),1,5)-class_compare),[],2); % categorize the samples
+
+% create the one-hot array for each sample
+targs = zeros(size(class_compare));
+for ind = 1:size(CatListIx,1)
+    targs(ind,CatListIx(ind)) = 1;
+end
+
+% create the CatList for classification later on.
+CatList = cell(5,2);
+for ii = 1:5
+    CatList{ii,1} = ii;
+    CatList{ii,2} = [class_def(ii),0];
+end    
+
 
 % 
 % trialDiv = 5;
@@ -125,18 +144,20 @@ speed = sqrt(vels(:,1)**2 + vels(:,2)**2); %
 
 
 %% Compute multinomial regression to velocity categories
-% translate human-readible categories into category numbers
-CatListIX = cellfun(@(u) find(strcmp(u,CatList(:,1))),targetCat);
+% % translate human-readible categories into category numbers
+% CatListIX = cellfun(@(u) find(strcmp(u,CatList(:,1))),targetCat);
 
-% solve the multinomial regression problem with ANNs (since mnrfit is slow)
-% swap category list into ANN target arrangement
-targs = zeros(size(CatList,1),length(CatListIX));
-for k=1:length(CatListIX), targs(CatListIX(k),k) = 1; end
+% % solve the multinomial regression problem with ANNs (since mnrfit is slow)
+% % swap category list into ANN target arrangement
+% targs = zeros(size(CatList,1),length(CatListIX));
+% for k=1:length(CatListIX), targs(CatListIX(k),k) = 1; end
+
+
 % net setup
 softNet = PrepareSoftNet(size(Neur,2));
 
 % train
-softNet = train(softNet,Neur',targs);
+softNet = train(softNet,Neur',targs');
 
 % reproduce results by hand for export [softmax( W2*(W1*u+b1)+b2 )]
 A0 = softNet.LW{2,1}*softNet.IW{1};             % parameter mapping matrix
