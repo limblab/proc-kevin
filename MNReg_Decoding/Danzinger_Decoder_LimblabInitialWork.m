@@ -4,11 +4,11 @@
 % conversions
 
 monkey = 'Pancake'; % monkey name
-task = 'WS'; % task
+task = 'WM'; % task
 array_name = 'left_M1';
 ran_by = 'KLB'; % who recorded this?
 lab = 1; % upstairs
-bin_width = .001; % 50 ms
+bin_width = .01; % 50 ms
 sorted = 0;
 requires_raw_emg = 0; % are we recording EMG here?
 
@@ -64,12 +64,14 @@ trial_order = randperm(total_trials); % randomly reorder the trials
 train_cutoff = floor(total_trials*train_perc);
 train_inds = trial_order(1:train_cutoff); % use P training trials
 
-% % get the model from ZD's code
-dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,2), xds.bin_width, 'num_dirs', 2); 
+% get the model from ZD's code -- use the velocity directly
+dpars_naive = ComputeMNRPars(trial_spike_counts(train_inds), trial_curs(train_inds,2), xds.bin_width, 1);
 
 
 disp('decoder built')
 % get testing and training predictions
+
+%% Plot predictions, confusion matrix etc
 
 %% Run online
 

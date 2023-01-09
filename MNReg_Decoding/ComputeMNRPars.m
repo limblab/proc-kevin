@@ -1,4 +1,4 @@
-function DPars = ComputeMNRPars(Neur_Cell,Vel_Cell,dt, varargin)
+function DPars = ComputeMNRPars(Neur_Cell,Vel_Cell,dt,plt_flag)
 % SUPPORT FUNCTION to compute multinomial regression parameters from calibration data
 %
 % DPars = ComputeMNPars(Neur_Cell, Pos_Cell, dt, varargin)
@@ -20,7 +20,8 @@ function DPars = ComputeMNRPars(Neur_Cell,Vel_Cell,dt, varargin)
 % mixCat:           How much to blend each category when not predicting
 %                   probability 1 for a given category.
 % dt:               Timestep.
-%
+% plt_flag:             if plot is on, will plot the velocities with color
+%                   based on state
 %
 %
 %
@@ -56,16 +57,16 @@ mixCat = 0.85;
 % We'll just use the velocity of the cursor, and divide into the number of
 % planned 
 
-num_dirs = 8; % for 8 target directions
-dir_splits = 2; % number of states (speeds) per direction
-
-for varg_i  = 1:2:numel(varargin)
-    if strcmpi(varargin{varg_i},'num_dirs')
-        num_dirs = varargin{varg_i+1};
-    elseif strcmpi(varargin{varg_i},'dir_splits')
-        dir_splits = varargin{varg_i+1};
-    end
-end
+% num_dirs = 8; % for 8 target directions
+% dir_splits = 2; % number of states (speeds) per direction
+% 
+% for varg_i  = 1:2:numel(varargin)
+%     if strcmpi(varargin{varg_i},'num_dirs')
+%         num_dirs = varargin{varg_i+1};
+%     elseif strcmpi(varargin{varg_i},'dir_splits')
+%         dir_splits = varargin{varg_i+1};
+%     end
+% end
 
 % start with x only, to make the coding faster
 quants = quantile(Vel(:,1),[.01, .05, .95, .99]); % divide the x velocity
@@ -86,61 +87,14 @@ CatList = cell(5,2);
 for ii = 1:5
     CatList{ii,1} = ii;
     CatList{ii,2} = [class_def(ii),0];
-end    
+end
 
 
-% 
-% trialDiv = 5;
-% % all distances from center
-% distFromCntr = sqrt(sum(X(:,1:2).^2,2));    
-% % the trialDiv divisions at which this distance is categorized
-% [~, ~, bin] = histcounts(distFromCntr,linspace(0,max(distFromCntr),trialDiv+1));
-% 
-% % assign each sample to a category
-% targetCat = cell(ns,1);
-% for k=1:ns
-%     if bin(k)==1
-%         % resting in center
-%         targetCat{k} = 'Cr';
-%     elseif bin(k)==5 && X(k,2)>0
-%         % stoping on north target
-%         targetCat{k} = 'Ns'; %'Or';
-%     elseif bin(k)==3 && X(k,2)>0
-%         % fast speed moving north
-%         targetCat{k} = 'Nf';
-%     elseif (bin(k)==2 || bin(k)==4) && X(k,2)>0
-%         % slow speed moving north
-%         targetCat{k} = 'Ns'; %'Nf';
-%     elseif bin(k)==5 && X(k,1)>0
-%         % stoping on east target
-%         targetCat{k} = 'Es'; %'Or';
-%     elseif bin(k)==3 && X(k,1)>0
-%         % fast speed moving east
-%         targetCat{k} = 'Ef';
-%     elseif (bin(k)==2 || bin(k)==4) && X(k,1)>0
-%         % slow speed moving east
-%         targetCat{k} = 'Es'; %'Ef';
-%     elseif bin(k)==5 && X(k,2)<0
-%         % stoping on south target
-%         targetCat{k} = 'Ss'; %'Or';
-%     elseif bin(k)==3 && X(k,2)<0
-%         % fast speed moving south
-%         targetCat{k} = 'Sf';
-%     elseif (bin(k)==2 || bin(k)==4) && X(k,2)<0
-%         % slow speed moving south
-%         targetCat{k} = 'Ss'; %'Sf';
-%     elseif bin(k)==5 && X(k,1)<0
-%         % stoping on west target
-%         targetCat{k} = 'Ws'; %'Or';
-%     elseif bin(k)==3 && X(k,1)<0
-%         % fast speed moving west
-%         targetCat{k} = 'Wf';
-%     elseif (bin(k)==2 || bin(k)==4) && X(k,1)<0
-%         % slow speed moving west
-%         targetCat{k} = 'Ws'; %'Wf';
-%     end
-% 
-% end
+% Plot if flag is on
+if plt_flag
+    cl = lines;
+    scatter(1:length(Vel(:,1)), Vel(:,1), 1, cl(CatListIx,:));
+end
 
 
 %% Compute multinomial regression to velocity categories
