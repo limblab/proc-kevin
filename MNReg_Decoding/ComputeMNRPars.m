@@ -20,8 +20,8 @@ function DPars = ComputeMNRPars(Neur_Cell,Vel_Cell,dt,plt_flag)
 % mixCat:           How much to blend each category when not predicting
 %                   probability 1 for a given category.
 % dt:               Timestep.
-% plt_flag:             if plot is on, will plot the velocities with color
-%                   based on state
+% plt_flag:         if plot is on, will plot the velocities with color
+%                   based on state and a confusion matrix
 %
 %
 %
@@ -36,8 +36,13 @@ function DPars = ComputeMNRPars(Neur_Cell,Vel_Cell,dt,plt_flag)
 %
 % K Bodkin Dec 2022:
 %       1. Changing the loading process to allow different trial lengths
-%       2. Updating state classification definition to be the actual
-%           velocity
+%       2. Updating state classification definition to work off the
+%           velocity provided. 
+%       3. Adding plotting abilities: classified state, predicted state,
+%           confusion matrix
+%
+% K Bodkin Feb 2022
+%       1. 2D states, completely orthogonal for now
 
 %% Stack N and X into [obs x neurons] and [obs x state] matrices
 Neur = cell2mat(Neur_Cell);
@@ -57,21 +62,15 @@ mixCat = 0.85;
 % We'll just use the velocity of the cursor, and divide into the number of
 % planned 
 
-% num_dirs = 8; % for 8 target directions
-% dir_splits = 2; % number of states (speeds) per direction
-% 
-% for varg_i  = 1:2:numel(varargin)
-%     if strcmpi(varargin{varg_i},'num_dirs')
-%         num_dirs = varargin{varg_i+1};
-%     elseif strcmpi(varargin{varg_i},'dir_splits')
-%         dir_splits = varargin{varg_i+1};
-%     end
-% end
 
 % start with x only, to make the coding faster
-quants = quantile(Vel(:,1),[.01, .05, .95, .99]); % divide the x velocity
+min_quant = quantile(Vel(:,1),.05);
+max_quant = quantile(Vel(:,1),.95);
+quants = [min_quant, min_quant/2, max_quant/2, max_quant];
 class_def = [quants(1:2),0,quants(3:4)]; % create the classes
 class_compare = repmat(class_def,size(Vel,1),1); % for categorizing each sample
+
+
 
 % classify each sample
 [~,CatListIx] = min(abs(repmat(Vel(:,1),1,5)-class_compare),[],2); % categorize the samples
@@ -90,11 +89,6 @@ for ii = 1:5
 end
 
 
-% Plot if flag is on
-if plt_flag
-    cl = lines;
-    scatter(1:length(Vel(:,1)), Vel(:,1), 1, cl(CatListIx,:));
-end
 
 
 %% Compute multinomial regression to velocity categories
@@ -125,6 +119,7 @@ mnrModel = @(u,A) softmax(A*[u; 1], []);
 
 
 
+
 %% Consolidate output decoder parameters
 % construct a struct of parameters compatible with the
 % MultinomialSelection.m function used for state prediction.
@@ -134,6 +129,36 @@ DPars.CatList = CatList;
 DPars.speedScale = speedScale;          % online use only
 DPars.mixCat = mixCat;                  % online use only
 DPars.dt = dt;                          % online use only
+
+
+%% Plot 
+% Plot if flag is on
+if plt_flag
+    for ii = 1:length(Neur)
+      [~,predict_state(ii)] = max(DPars.mnrModel(Neur(ii,:)',DPars.A)); % plot it
+    end
+    
+    % Velocities in time
+    cl = lines;
+    f = figure;
+    ax(1) = subplot(2,1,1);
+    scatter((1:length(Vel(:,1)))*dt, Vel(:,1), 2, cl(CatListIx,:));
+    ylabel('Velocity')
+    title('Input Labels')
+    ax(2) = subplot(2,1,2); 
+    scatter((1:length(Vel(:,1)))*dt, Vel(:,1), 2, cl(predict_state,:));
+    ylabel('Velocity')
+    xlabel('Time')
+    title('Predicted Labels')
+    linkaxes(ax,'x')
+    
+    % Confustion matrix
+    figure
+    cm = confusionchart(CatListIx, predict_state);
+    cm.Title = 'Confusion Matrix of training velocity state';
+    cm.RowSummary = 'row-normalized';
+    cm.ColumnSummary = 'column-normalized';
+end
 
 
 end
