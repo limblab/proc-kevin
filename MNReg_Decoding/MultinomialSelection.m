@@ -17,7 +17,7 @@ function X = MultinomialSelection(N,DPars,X0,XForce)
 %           mnrModel:   function for multinomial regression: mnrModel(firingrate,A,b)
 %           A:          Mapping parameter for mnrModel.
 %           CatList:    Categories in mnrModel.
-%           speedScale: How much to scale speeds defiend in CatList.
+%           speedScale: How much to scale speeds defined in CatList.
 %           mixCat:     How much to blend each category 
 %           dt:               Timestep.
 % X0:   Current state vector, input from the Task Function. We are
@@ -47,15 +47,23 @@ else
     % compute category estimates
     estCats = DPars.mnrModel(N,DPars.A);
     
-    % mix estimated categories according to their probabilities (including
-    % some deadspace for predictions above or below mixCat)
-    wCats = max(0,min(1, (estCats+DPars.mixCat-1)/(2*DPars.mixCat-1) ));
-    wCats = wCats/sum(wCats);      % renormalize so all weights sum to 1
+% I don't think this is doing what they want it to do...
+%     % mix estimated categories according to their probabilities (including
+%     % some deadspace for predictions above or below mixCat)
+%     wCats = max(0,min(1, (estCats+DPars.mixCat-1)/(2*DPars.mixCat-1) ));
+%     wCats = wCats/sum(wCats);      % renormalize so all weights sum to 1
+% 
+%     % extract velocity predictions, weight them by wCats, then sum
+% %     Vp = sum( vertcat(DPars.CatList{:,2}).*wCats, 1)';
+% %     Vp = cell2mat(DPars.CatList(:,2))'*wCats;
+%     Vp = wCats' * cell2mat(DPars.CatList(:,2));
 
-    % extract velocity predictions, weight them by wCats, then sum
-%     Vp = sum( vertcat(DPars.CatList{:,2}).*wCats, 1)';
-%     Vp = cell2mat(DPars.CatList(:,2))'*wCats;
-    Vp = wCats' * cell2mat(DPars.CatList(:,2));
+    % just the max, not mixed
+%     [~,estCat_i] = max(estCats);
+%     Vp = DPars.CatList{estCat_i,2};
+
+
+    Vp = estCats' * cell2mat(DPars.CatList(:,2));
 
     % integrate to find the next cursor state
     X(1:2) = X0(1:2) + DPars.dt*Vp;
@@ -64,9 +72,7 @@ else
 end
 
 
-% in all cases, do not predict a position outside the workspace [-1 1]
-
-% changed to 50,-50 for our screen (KLB). Could also just have a
+% changed to 20,-20 for our screen (KLB). Could also just have a
 % multiplier to adjust some sort of gain, but whatever.
 X(1:2) = max(-20,min(20,X(1:2)));
 
