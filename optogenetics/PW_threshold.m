@@ -53,4 +53,4 @@ cbmex('config',261,'smpgroup',3,'smpfilter',0)
 
 %% Start the cerebus recording
 
-cbmex('fileconfig'
+cbmex('fileconfig')
