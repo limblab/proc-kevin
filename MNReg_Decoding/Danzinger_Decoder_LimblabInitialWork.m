@@ -8,7 +8,7 @@ task = 'WS'; % task
 array_name = 'left_M1';
 ran_by = 'KLB'; % who recorded this?
 lab = 1; % upstairs
-bin_width = .001; % 50 ms
+bin_width = .01; % 50 ms
 sorted = 0;
 requires_raw_emg = 0; % are we recording EMG here?
 
@@ -83,7 +83,7 @@ fopen(u); % and open it
 
 
 % initialize the cerebus
-if ~exist('rec_dir','variable')
+if ~exist('rec_dir','var')
     rec_dir = uigetdir('C:','Recording directory'); % where are we recording?
 end
 rec_name = strcat(rec_dir,filesep,datestr(now,'YYYYmmdd_hhMM'), '_', monkey, '_', task, '_');
