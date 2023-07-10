@@ -12,15 +12,15 @@
 %   
 
 
-function = optogenetic_ezstim(varargin)
+function optogenetic_ezstim(varargin)
 
     % default values:
     monkey = 'Sherry';
-    savedir = '';
+    savedir = 'C:\data\Sherry\20230622\';
     amplitude = 5; % control voltage value
     frequency = 1; % frequency in hertz
     pw = 20; % pulse width in ms
-    stim_length = 10; % length of stimulus train (seconds)
+    stim_length = 60; % length of stimulus train (seconds)
 
 
 
@@ -50,21 +50,27 @@ function = optogenetic_ezstim(varargin)
     % -------------
 
     % setup the default save directory if needed
-    if strcmp(savedir,'') == 1:
-        savedir = ['C:\Data\',monkey,filesep,datestr(today,'yyyymmdd')];
+    if strcmp(savedir,'') == 1
+        savedir = ['C:\Data\',monkey,filesep,datestr(now,'yyyymmdd')];
     end
 
     % create the recording folder as necessary etc
-    if ~exists(savedir)
+    if ~exist(savedir)
         mkdir(savedir);
     end
 
     % storage file name
-    filename = [savedir,filesep,datestr(today,'yyyymmdd_HH:MM:SS'),'_',monkey,
-                '_amp',amp,...
-                '_freq',frequency,...
-                '_pw',pw,...
-                '_stimLen',stim_length];
+    %filename = strjoin([savedir,filesep,datestr(now,'yyyymmdd_HHMMSS'),'_',monkey,...
+    %            '_amp',num2str(amplitude),...
+    %            '_freq',num2str(frequency),...
+    %            '_pw',num2str(pw),...
+    %            '_stimLen',num2str(stim_length)],'');
+    filename = [savedir,filesep,datestr(now,'yyyymmdd_HHMMSS'),'_',monkey,...
+                '_amp',num2str(amplitude),...
+                '_freq',num2str(frequency),...
+                '_pw',num2str(pw),...
+                '_stimLen',num2str(stim_length)];
+    disp(filename)
 
 
     % -----------
@@ -81,50 +87,52 @@ function = optogenetic_ezstim(varargin)
         cbmex('config',ii,'smpgroup',0)
     end
 
-    % EMG channels 1-5 on at 2khz sampling, 10-250hz BP filter
-    for ii = 257:261
-        cbmex('config',ii,'smpgroup',3,'smpfilter',9)
+    % EMG channels 1-4 on at 2khz sampling, 10-250hz BP filter
+    for ii = 257:260
+        cbmex('config',ii,'smpgroup',5,'smpfilter',0)
     end
 
     % recording the pulse control signal -- channel 6
-    cbmex('config',262,'smpgroup',3,'smpfilter',0)
+    cbmex('config',262,'smpgroup',5,'smpfilter',0)
 
 
     % convert values to cerebus 
     % voltages to DAQ steps (5V = 32676, -5 = -32676)
-    volt_c = amp*(32676/5);
+    volt_c = amplitude*(32676);
 
     % seconds to 30000 samples
-    period_samp = 30000/freq;
+    period_samp = 33333/frequency;
     % pw to 30000 samples
-    hi_samp = pw*33;
+    hi_samp = pw*33.332;
     lo_samp = period_samp-hi_samp;
 
 
     % recording start 
     % start recording, wait half a second, then start stimulating
     cbmex('trialconfig',1)
-    cbmex('fileconfig',filename,'',1)
-    sleep(.5)
+    cbmex('fileconfig',char(filename),'',1)
+    pause(.5)
     
     % comment telling the cerebus we're sampling
-    cbmex('comment',0,0,['Starting stimulation -- ',amp,' volts, ',...
-            frequency,' hertz',pw,' ms pulse width for',stim_length,' seconds'])
+    comment = strjoin(['Starting stimulation -- ',string(amplitude),' volts, ',...
+            string(frequency),' hertz',string(pw),' ms pulse width for',...
+            string(stim_length),' seconds']);
+    cbmex('comment',0,0,char(comment))
     
     % start the stim
-    cbmex('analogout',1,'sequence',hi_samp,volt_c,lo_samp,0)
+    cbmex('analogout',1,'sequence',[hi_samp,volt_c,lo_samp,0])
 
     % stop stim
-    sleep(stim_length)
+    pause(stim_length)
 
     % stop the stim
-    cbmex('analogout',1,'sequence',0,1000)
+    cbmex('analogout',1,'sequence',[1000,0])
 
     % pause another half second
-    sleep(.5)
+    pause(.5)
 
     % stop the recording
-    cbmex('fileconfig',filename,'',0)
+    cbmex('fileconfig',char(filename),'',0)
     cbmex('trialconfig',0)
     cbmex('close')
 
