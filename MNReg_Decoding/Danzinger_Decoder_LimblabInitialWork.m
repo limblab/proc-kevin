@@ -3,16 +3,16 @@
 % gonna take advantage of our XDS built ins to handle all of the
 % conversions
 
-monkey = 'Pancake'; % monkey name
+monkey = 'Tot'; % monkey name
 task = 'WM'; % task
 array_name = 'left_M1';
 ran_by = 'KLB'; % who recorded this?
-lab = 1; % upstairs
+lab = 6; % upstairs
 bin_width = .05; % 50 ms
 sorted = 0;
 requires_raw_emg = 0; % are we recording EMG here?
 
-delay = 1; % number of bins to delay by -- 2 bins w/ 50 ms bin == 100 ms
+delay = 0; % number of bins to delay by -- 2 bins w/ 50 ms bin == 100 ms
 
 params = struct(...
     'monkey_name',monkey,...
@@ -25,20 +25,19 @@ params = struct(...
     'requires_raw_emg',requires_raw_emg);
 
 
-%% choosing the file to use
-[file_name,base_dir] = uigetfile('*.nev');
-
 map_dir = 'Z:\limblab\lab_folder\Animal-Miscellany\Pancake_20K2\Surgeries\20210713_Pancake_LeftM1\';
 map_name = 'SN 6250-002468 array 1059-12.cmp';
 save_dir = 'D:\Kevin\';
+
+%% convert file to xds
+[file_name,base_dir] = uigetfile('*.nev');
+
+
 
 xds = raw_to_xds(base_dir, file_name, map_dir, map_name, params);
 base_name = strsplit(file_name,'.nev');
 
 % add delay as desired
-% temp_p = [zeros(delay,2); xds.curs_p(1:end-delay,:)];
-% temp_v = [zeros(delay,2); xds.curs_v(1:end-delay,:)];
-% temp_a = [zeros(delay,2); xds.curs_a(1:end-delay,:)];
 temp_p = [xds.curs_p(delay+1:end,:); zeros(delay,2)];
 temp_v = [xds.curs_v(delay+1:end,:); zeros(delay,2)];
 temp_a = [xds.curs_a(delay+1:end,:); zeros(delay,2)];
@@ -47,10 +46,18 @@ xds.curs_v = temp_v; % overwrite
 xds.curs_a = temp_a; % overwrite
 xds.cursor_delay = delay;
 
+% useful for later -- neurons and sample numbers
+num_samples = size(xds.spike_counts,1); % number of samples
+num_neurons = size(xds.spike_counts,2); % number of neurons
+
 save_name = strcat(save_dir, base_name{1}, '_xds.mat');
 save(save_name,'xds');
 
 disp('XDS created and saved')
+
+%% use existing xds
+[file_name, base_dir] = uigetfile('*_xds.mat');
+load([base_dir,filesep,file_name]);
 
 %% parse the xds data
 %
@@ -80,11 +87,14 @@ dpars_naive = ComputeMNRPars(trial_spike_counts, trial_curs(:,2), xds.bin_width,
 disp('decoder built')
 % get testing and training predictions
 
-%% Offline testing
+%% Offline testing -- convert xds
 
 [file_name,base_dir] = uigetfile('*.nev');
 
 offline_xds = raw_to_xds(base_dir, file_name, map_dir, map_name, params);
+
+%% offline testing -- existing xds
+
 
 %%
 % add delay as desired
@@ -206,17 +216,46 @@ xlabel('Samples')
 linkaxes(ax,'x')
 title('Predicted cursor, offline data, trial aligned, start trial at 0')
 
+%% compare with W Filter
 
+% create the historical data lags
+num_taps = 10; % start with 10 lags
+lagged_spikes = zeros(num_samples,num_taps*num_neurons);
+% fill lagged spike matrix
+for ii = 0:(num_taps-1)
+    neur_offset = ii*num_neurons;
+    lagged_spikes(1:num_samples-ii,(1:num_neurons)+neur_offset) = xds.spike_counts((ii+1):num_samples,:);
+end
+
+W = lagged_spikes\xds.curs_v; % could do the normal equation or something, but this is quicker ;)
+
+% calculate quality of predictions -- both velocity and cursor
+pred_vel = lagged_spikes * W; 
+pred_curs = cumsum(pred_vel)*bin_width;
+
+% calculate varience explained
+vaf_vel = sum((pred_vel-xds.curs_v).^2,1)./mean(xds.curs_v,1);
+vaf_curs = sum((pred_curs-xds.curs_p).^2,1)./mean(xds.curs_p,1);
 
 
 %% Run online
 
+% wiener filter or multinomial?
+MN_flag = 0;
+
 % xpc settings -- for communication
 xpc_ip = '192.168.0.1'; % for sending the UDP packets of the X and Y
 xpc_port = 24999; % command port
-% echoudp('on',xpc_port)
-u = udp(xpc_ip, xpc_port); % create opject
-fopen(u); % and open it
+
+if verLessThan('matlab','9.9')
+    u = udp(xpc_ip, xpc_port); % create opject
+    set(u,'ByteOrder','littleEndian');
+    fopen(u); % and open it
+else
+    u = udpport();
+    set(u,'ByteOrder','littleEndian');
+end
+
 
 
 
@@ -236,10 +275,13 @@ fid_spike = fopen(spikefile,'w+');
 
 
 % setup the output and inputs
-% empty buffer for spikes
-firing_buffer = zeros(1,size(xds.spike_counts,2));
-% curs = [x, y, vx, vy] -- start with all zeros
-curs = [0, 0, 0, 0];
+% empty buffer for spikes -- different if wiener vs multinomial
+if MNR_flag == true
+    firing_buffer = zeros(1,num_neurons);
+else
+    firing_buffer = zeros(1,num_neurons*num_taps);
+end
+curs = [0, 0, 0, 0]; % curs pos, curs vel 
 
 % small GUI to stop the system from running
 h = msgbox('Press ''ok''  to stop recording');
@@ -264,16 +306,28 @@ while ishandle(h)
         
         % pull in the number of spikes that have happened per channel in
         % the last bin period
-        for ii = 1:size(firing_buffer,2)
+        % works for both the wiener and the multinomial, since we'll shift
+        % the wiener at the end of each loop
+        for ii = 1:num_neurons
             firing_buffer(ii) = length(ts_cell_array{ii,2})/bin_width; % counts in hz
         end
         
         % Run it through the decoder
-        curs = MultinomialSelection(firing_buffer', dpars_naive, curs);
+        if MNR_flag == true
+            curs = MultinomialSelection(firing_buffer', dpars_naive, curs);
+        else
+            curs(3:4) = firing_buffer*W; % vel = rates * W == 1x2 output
+            curs(1:2) = curs(1:2) + curs(3:4).*bin_width; % velocity to position
+        end
+            
         
         
         % parse to send to the XPC
-        fwrite(u,[curs(1),curs(2),0,0],'single') % send to xpc
+        if verLessThan('matlab','9.9')
+            fwrite(u,[0,0,curs(1),curs(2)],'single') % send to xpc
+        else
+            write(u,[0,0,curs(1),curs(2)],'single',xpc_ip, xpc_port);
+        end
         
         loop_time = toc(elapse_tic);
         % store the data
@@ -294,7 +348,7 @@ while ishandle(h)
 end
 
 
-%% 
+%% close everything down
 cbmex('fileconfig',rec_name,'',0)
 cbmex('trialconfig',0)
 cbmex('close')
