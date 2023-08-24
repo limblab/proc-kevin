@@ -52,7 +52,7 @@ ns = size(Vel,1);     % number of samples
 
 %% Prepare parameters for the decoder and categories
 % overall speed of the categories
-speedScale = 0.7;   % ~mean of forced cursor velocity
+speedScale = 1.4;   % ~mean of forced cursor velocity
 % category mixing coefficient (online use only)
 mixCat = 0.85;
 
@@ -62,44 +62,72 @@ mixCat = 0.85;
 % We'll just use the velocity of the cursor, and divide into the number of
 % planned 
 
+% Normalize the data to account for faster flexion/ulnar movements
+% Current normalization strategy : 
+%   - Normalize each direction by the 95th quantile FOR THAT DIRECTION
+%       (So that the "zero movement" condition doesn't get shifted)
+%   - Everything over the 95th quantile is also capped at 1
 
-% start with x only, to make the coding faster
-min_quant = quantile(Vel(:,1),.05);
-max_quant = quantile(Vel(:,1),.95);
-quants = [min_quant, min_quant/2, max_quant/2, max_quant];
-class_def = [quants(1:2),0,quants(3:4)]; % create the classes
-class_compare = repmat(class_def,size(Vel,1),1); % for categorizing each sample
+% left
+left_idx = find(Vel(:,1) < 0);
+left_95 = quantile(Vel(left_idx,1),.05); % find everything going left
+Vel(left_idx,1) = -Vel(left_idx,1)/left_95; % divide by 95th quantile
+
+% right
+right_idx = find(Vel(:,1) > 0);
+right_95 = quantile(Vel(right_idx,1),.95); % find everything going right
+Vel(right_idx,1) = Vel(right_idx,1)/right_95; % divide by 95th quantile
+
+% up
+up_idx = find(Vel(:,2) > 0);
+up_95 = quantile(Vel(up_idx,2),.95); % find everything going up
+Vel(up_idx,2) = Vel(up_idx,2)/up_95; % divide by 95th quantile
+
+% down
+down_idx = find(Vel(:,2) < 0);
+down_95 = quantile(Vel(down_idx,2),.05); % find everything going down
+Vel(down_idx,2) = -Vel(down_idx,2)/down_95; % divide by 95th quantile
 
 
 
-% classify each sample
-[~,CatListIx] = min(abs(repmat(Vel(:,1),1,5)-class_compare),[],2); % categorize the samples
+% Nine classes -- two for each direction, plus a "no-movement" condition
+% CatList == category definitions with labels, for predictions. Not
+% normalized
+% cat_def == category definitions as a matrix, normalized
+CatList = { 'zero', [ 0,0];    ... % no movement
+            'fast right', [.75 * right_95,0];    ... % fast right
+            ' slow right', [.3 * right_95,0];   ... % slow right
+            'fast left', [.75 * left_95,0];   ... % fast left
+            'slow left', [.3 * left_95,0];  ... % slow left
+            'fast up', [0,.75*up_95];    ... % fast up
+            'slow up', [0,.3*up_95];   ... % slow up
+            'fast down', [0,.75*down_95];   ... % fast down
+            'slow down', [0,.3*down_95]};     % slow down\
+cat_def = [ 0,0;    ... % no movement
+          .75,0;    ... % fast right
+          .3,0;   ... % slow right
+          -.75,0;   ... % fast left
+          -.3,0;  ... % slow left
+          0,.75;    ... % fast up
+          0,.3;   ... % slow up
+          0,-.75;   ... % fast down
+          0,-.3];     % slow down\
 
-% create the one-hot array for each sample
-targs = zeros(size(class_compare));
-for ind = 1:size(CatListIx,1)
-    targs(ind,CatListIx(ind)) = 1;
-end
 
-% create the CatList for classification later on.
-CatList = cell(5,2);
-for ii = 1:5
-    CatList{ii,1} = ii;
-    CatList{ii,2} = [class_def(ii),0];
+% classify each sample and create the one-hot matrix
+% cats == category for each sample
+% targs == one-hot matrix; the training target for the multinom. regression
+cats = zeros(size(Vel,1),1);
+targs = zeros(size(Vel,1),size(cat_def,1));
+for ii = 1:length(cats)
+    [~,cats(ii)] = min(sum((Vel(ii,:)-cat_def).^2,2)); % minimum distance from category
+    targs(ii,cats(ii)) = 1;
 end
 
 
 
 
 %% Compute multinomial regression to velocity categories
-% % translate human-readible categories into category numbers
-% CatListIX = cellfun(@(u) find(strcmp(u,CatList(:,1))),targetCat);
-
-% % solve the multinomial regression problem with ANNs (since mnrfit is slow)
-% % swap category list into ANN target arrangement
-% targs = zeros(size(CatList,1),length(CatListIX));
-% for k=1:length(CatListIX), targs(CatListIX(k),k) = 1; end
-
 
 % net setup
 softNet = PrepareSoftNet(size(Neur,2));
@@ -115,7 +143,7 @@ mnrModel = @(u,A) softmax(A*[u; 1], []);
 
 
 % % solve multinomial regression (too slow)
-% [A, dev, stats] = mnrfitZCD(N,CatListIX,'maxiterations',5);
+% [A, dev, stats] = mnrfitZCD(N,classes,'maxiterations',5);
 
 
 
@@ -142,7 +170,7 @@ if plt_flag
     cl = lines;
     f = figure;
     ax(1) = subplot(2,1,1);
-    scatter((1:length(Vel(:,1)))*dt, Vel(:,1), 2, cl(CatListIx,:));
+    scatter((1:length(Vel(:,1)))*dt, Vel(:,1), 2, cl(cats,:));
     ylabel('Velocity')
     title('Input Labels')
     ax(2) = subplot(2,1,2); 
@@ -154,7 +182,7 @@ if plt_flag
     
     % Confustion matrix
     figure
-    cm = confusionchart(CatListIx, predict_state);
+    cm = confusionchart(CatList(cats), CatList(predict_state)');
     cm.Title = 'Confusion Matrix of training velocity state';
     cm.RowSummary = 'row-normalized';
     cm.ColumnSummary = 'column-normalized';
