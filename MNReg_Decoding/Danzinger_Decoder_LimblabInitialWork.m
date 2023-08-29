@@ -25,12 +25,12 @@ params = struct(...
 
 map_dir = 'Z:\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\Tot_20K4\Surgery\20230215_LeftM1\';
 map_name = 'SN 6251-002471 array 1066-5.cmp';
-save_dir = 'D:\Kevin\';
+
 
 %% convert file to xds
-[file_name,base_dir] = uigetfile('*.nev');
+[file_name,base_dir] = uigetfile('*.nev','Select .nev file');
 
-
+save_dir = uigetdir(pwd,'Select xds storage directory'); % where do we want to save this?
 
 xds = raw_to_xds(base_dir, file_name, map_dir, map_name, params);
 base_name = strsplit(file_name,'.nev');
@@ -390,7 +390,7 @@ while ishandle(h)
         
         % cursor corrections -- to make the system usable!
         % limit at the edge of the screen
-        curs(1:2) = max(-12,max(12,curs(1:2)));
+        curs(1:2) = max(-12,min(12,curs(1:2)));
 
 
         % parse to send to the XPC
