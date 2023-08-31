@@ -89,6 +89,10 @@ disp('decoder built')
 offline_xds = raw_to_xds(base_dir, file_name, map_dir, map_name, params);
 
 %% offline testing -- existing xds
+[file_name, base_dir] = uigetfile('*_xds.mat');
+offline_vars = load([base_dir,filesep,file_name]);
+offline_xds = offline_vars.xds;
+clear offline_vars
 
 
 %% plotting cursor velocities and positions
@@ -107,70 +111,19 @@ for replay_idx = 1:size(offline_xds.curs_v,1)
 end
 
 % Compare and contrast
-f_offline = figure;
-ax(1) = subplot(2,1,1);
-hold on
-plot(offline_xds.time_frame, pred_curs(:,1));
-plot(offline_xds.time_frame, offline_xds.curs_p(:,1))
-legend('Predicted Values','Recorded Values')
-ylabel('Horizontal Position')
-ax(2) = subplot(2,1,2);
-hold on
-plot(offline_xds.time_frame, pred_vel(:,1));
-plot(offline_xds.time_frame, offline_xds.curs_v(:,1))
-legend('Predicted Values','Recorded Values')
-ylabel('Horizontal Velocity')
-xlabel('Time (s)')
-linkaxes(ax,'x')
-title('Continuous cursor')
+f_MNcurs_cont = plot_preds(offline_xds.curs_p, pred_curs, offline_xds.time_frame, {'Horizontal Position', 'Vertical Position'})
+sgtitle(f_MNcurs_cont, 'MNRegression Continuous Cursor Predictions')
+f_MNvel_cont = plot_preds(offline_xds.curs_v, pred_vel, offline_xds.time_frame, {'Horizontal Velocity', 'Vertical Velocity'})
+sgtitle(f_MNvel_cont, 'MNRegression Continuous Velocity Predictions')
 
 
-% % Aligned Trials
+% % only plot "trials" from start time, starting at 0 at the beginning of
+% each
 % pull out the trials so they're the same as above
 [offline_spike_counts, ~, ~, ~, offline_curs, offline_tgt_pos] = ...
     get_rewarded_trials(offline_xds, start_time);
 
-% convert from cells to matrices
-offline_spike_counts = cell2mat(offline_spike_counts);
-offline_p = cell2mat(offline_curs(:,1));
-offline_v = cell2mat(offline_curs(:,2));
-
-% store predictions
-pred_vel = zeros(size(offline_p));
-pred_curs = zeros(size(offline_p));
-temp_curs = [0,0,0,0];
-for replay_idx = 1:size(offline_p,1)
-    temp_curs = MultinomialSelection(offline_spike_counts(replay_idx,:)', dpars_naive, temp_curs);
-    pred_curs(replay_idx,:) = temp_curs(1:2);
-    pred_vel(replay_idx,:) = temp_curs(3:4);
-end
-
-
-
-f_aligned = figure;
-ax(1) = subplot(2,1,1);
-hold on
-plot(pred_curs(:,1))
-plot(offline_p(:,1))
-ylabel('Horizontal Position')
-legend('Prediction','Recording')
-ax(2) = subplot(2,1,2);
-hold on
-plot(pred_vel(:,1))
-plot(offline_v(:,1))
-legend('Prediction','Recording')
-ylabel('Horizontal Velocity')
-xlabel('Samples')
-linkaxes(ax,'x')
-title('Predicted cursor, offline data, trial aligned')
-
-
-% % Aligned Trials -- reset the cursor
-% pull out the trials so they're the same as above
-[offline_spike_counts, ~, ~, ~, offline_curs, offline_tgt_pos] = ...
-    get_rewarded_trials(offline_xds, start_time);
-
-% store predictions
+% 
 pred_vel = offline_curs(:,2);
 pred_curs = offline_curs(:,1);
 for replay_idx = 1:numel(offline_spike_counts)
@@ -188,22 +141,12 @@ pred_vel = cell2mat(pred_vel);
 offline_p = cell2mat(offline_curs(:,1));
 offline_v = cell2mat(offline_curs(:,2));
 
-f_aligned = figure;
-ax(1) = subplot(2,1,1);
-hold on
-plot(pred_curs(:,1))
-plot(offline_p(:,1))
-ylabel('Horizontal Position')
-legend('Prediction','Recording')
-ax(2) = subplot(2,1,2);
-hold on
-plot(pred_vel(:,1))
-plot(offline_v(:,1))
-legend('Prediction','Recording')
-ylabel('Horizontal Velocity')
-xlabel('Samples')
-linkaxes(ax,'x')
-title('Predicted cursor, offline data, trial aligned, start trial at 0')
+f_curs_recenter = plot_preds(xds.curs_p, pred_curs, xds.time_frame, {'Horizontal Position','Vertical Position'});
+sgtitle(f_curs_recenter,'Offline Predicted Cursor Position, start each trial at 0')
+f_vel_recenter = plot_preds(xds.curs_v, pred_vel, xds.time_frame, {'Horizontal Velocity','Vertical Velocity'});
+sgtitle(f_vel_recenter,'Offline Predicted Cursor Velocity, start each trial at 0')
+
+
 
 %% compare with W Filter
 
@@ -234,36 +177,8 @@ vaf_curs = 1 - mean((pred_curs-xds.curs_p).^2,1)./var(xds.curs_p,1);
 
 
 % plot them
-figure
-ax(1) = subplot(2,1,1);
-plot(xds.curs_v(:,1))
-hold on
-plot(pred_vel(:,1))
-title('X Velocities')
-legend('true','predicted')
-ax(2) = subplot(2,1,2);
-plot(xds.curs_v(:,2))
-hold on
-plot(pred_vel(:,2))
-title('Y Velocities')
-legend('true','predicted')
-linkaxes(ax,'x')
-
-
-figure
-subplot(2,1,1)
-plot(xds.curs_p(:,1))
-hold on
-plot(pred_curs(:,1))
-title('X Position')
-legend('true','predicted')
-subplot(2,1,2)
-plot(xds.curs_p(:,2))
-hold on
-plot(pred_curs(:,2))
-title('Y Position')
-legend('true','predicted')
-
+vel_fig = plot_preds(xds.curs_v, pred_vel, xds.time_frame, {'Horizontal Velocity','Vertical Velocity'});
+pos_fig = plot(preds(xds.curs_p, pred_curs, xds.time_frame, {'Horizontal Cursor', 'Vertical Cursor'}));
 
 %% Run through xpc
 
@@ -307,15 +222,18 @@ if online_flag == true
 end
 
 
-%store predictions -- different names online vs replay
+
 if mn_flag == true
     bci_name = 'MultiNomial';
+    save([rec_dir, monkey, '_', datestr(now, 'YYYYmmdd_hhMM'), '_MNRDecoder.mat'],"dpars_naive")
 else
     bci_name = 'Wiener';
+    save([rec_dir, monkey, '_', datestr(now, 'YYYYmmdd_hhMM'), '_WienerDecoder.mat'],"filter_W")
 end
 
+% store predictions -- different names online vs replay
 if online_flag == true
-    predfile = [rec_dir, filesep,  monkey, '_', datestr(now, 'YYYYmmdd_hhMM'), '_', task, '_', bci_name, 'Predictions.txt'];
+    predfile = [rec_dir, filesep,  monkey, '_', datestr(now, 'YYYYmmdd_hhMM'), '_', task, '_', bci_name, 'Cursor.txt'];
     fid_pred = fopen(predfile, 'w+');
     spikefile = [rec_dir, filesep,  monkey, '_', datestr(now, 'YYYYmmdd_hhMM'), '_',task, '_Spikes.txt'];
     fid_spike = fopen(spikefile,'w+');
@@ -392,6 +310,15 @@ while ishandle(h)
         % limit at the edge of the screen
         curs(1:2) = max(-12,min(12,curs(1:2)));
 
+        % reset cursor to center if it's the start of a new trial
+        % NOTE -- double check the # in the cell array! might be different
+        % for the 256 cerebus
+        dig_data = ts_cell_array{151}(:,3); % only pull in the actual data
+        words = uint32(bitshift(bitand(hex2dec('ff00'),dig_Data),-8));
+        if any(words == 0x30) % look for "center target on"
+            curs = [0,0,0,0];
+        end
+
 
         % parse to send to the XPC
         if verLessThan('matlab','9.9')
@@ -449,3 +376,41 @@ if online_flag == true
     fclose(fid_spike); 
 end
 
+%% Post recording analysis
+% Look through the predicted cursor values, number of rewards etc
+
+[cursor_file,cursor_dir] = uigetfile('Cursor.txt');
+[spike_file,spike_dir] = uigetfile('Spikes.txt');
+
+fid = fopen(join([cursor_dir,cursor_file],filesep),'r');
+cursor = fscanf(fid,'%f');
+cursor = reshape(cursor,5,length(cursor)/5)'; % change to a Tx5 array
+fclose(fid);
+
+n_timepoints = size(cursor,1);
+fid = fopen(spike_file,'r');
+spikes = fscanf(fid, '%f');
+spikes = reshape(spikes, length(spikes)/n_timepoints,n_timepoints)';
+fclose(fid);
+
+% plot the velocities
+f_pred_vel = figure;
+ax(1) = subplot(2,1,1);
+plot(cursor(:,1),cursor(:,4))
+title('Horizontal Predicted Velocity')
+ax(2) = subplot(2,1,2);
+plot(cursor(:,1),cursor(:,5))
+xlabel('Time (s)')
+title('Vertical Predicted Velocity')
+linkaxes(ax,'x')
+
+% plot the cursor position
+f_pred_pos = figure;
+ax(1) = subplot(2,1,1);
+plot(cursor(:,1),cursor(:,2))
+title('Horizontal Position')
+ax(2) = subplot(2,1,2);
+plot(cursor(:,1),cursor(:,3))
+xlabel('Time (s)')
+title('Vertical Position')
+linkaxes(ax,'x')
