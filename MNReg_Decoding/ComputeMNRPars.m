@@ -94,24 +94,37 @@ Vel(down_idx,2) = -Vel(down_idx,2)/down_95; % divide by 95th quantile
 % CatList == category definitions with labels, for predictions. Not
 % normalized
 % cat_def == category definitions as a matrix, normalized
+
+% CatList = { 'zero', [ 0,0];    ... % no movement
+%             'fast right', [.75 * right_95,0];    ... % fast right
+%             ' slow right', [.3 * right_95,0];   ... % slow right
+%             'fast left', [.75 * left_95,0];   ... % fast left
+%             'slow left', [.3 * left_95,0];  ... % slow left
+%             'fast up', [0,.75*up_95];    ... % fast up
+%             'slow up', [0,.3*up_95];   ... % slow up
+%             'fast down', [0,.75*down_95];   ... % fast down
+%             'slow down', [0,.3*down_95]};     % slow down\
+
+%change the threshold for velocity categories
 CatList = { 'zero', [ 0,0];    ... % no movement
-            'fast right', [.75 * right_95,0];    ... % fast right
-            ' slow right', [.3 * right_95,0];   ... % slow right
-            'fast left', [.75 * left_95,0];   ... % fast left
-            'slow left', [.3 * left_95,0];  ... % slow left
-            'fast up', [0,.75*up_95];    ... % fast up
-            'slow up', [0,.3*up_95];   ... % slow up
-            'fast down', [0,.75*down_95];   ... % fast down
-            'slow down', [0,.3*down_95]};     % slow down\
+            'fast right', [.45 * right_95,0];    ... % fast right
+            ' slow right', [.1 * right_95,0];   ... % slow right
+            'fast left', [.45 * left_95,0];   ... % fast left
+            'slow left', [.1 * left_95,0];  ... % slow left
+            'fast up', [0,.45*up_95];    ... % fast up
+            'slow up', [0,.1*up_95];   ... % slow up
+            'fast down', [0,.45*down_95];   ... % fast down
+            'slow down', [0,.1*down_95]};     % slow down\        
+ 
 cat_def = [ 0,0;    ... % no movement
-          .75,0;    ... % fast right
-          .3,0;   ... % slow right
-          -.75,0;   ... % fast left
-          -.3,0;  ... % slow left
-          0,.75;    ... % fast up
-          0,.3;   ... % slow up
-          0,-.75;   ... % fast down
-          0,-.3];     % slow down\
+          .45,0;    ... % fast right
+          .1,0;   ... % slow right
+          -.45,0;   ... % fast left
+          -.1,0;  ... % slow left
+          0,.45;    ... % fast up
+          0,.1;   ... % slow up
+          0,-.45;   ... % fast down
+          0,-.1];     % slow down\
 
 
 % classify each sample and create the one-hot matrix

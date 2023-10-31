@@ -23,9 +23,8 @@ params = struct(...
     'requires_raw_emg',requires_raw_emg);
 
 
-map_dir = 'Z:\Basic_Sciences\Phys\L_MillerLab\limblab\lab_folder\Animal-Miscellany\Tot_20K4\Surgery\20230215_LeftM1\';
+map_dir = 'C:\data\Tot\';
 map_name = 'SN 6251-002471 array 1066-5.cmp';
-
 
 %% convert file to xds
 [file_name,base_dir] = uigetfile('*.nev','Select .nev file');
@@ -40,7 +39,7 @@ base_name = strsplit(file_name,'.nev');
 num_samples = size(xds.spike_counts,1); % number of samples
 num_neurons = size(xds.spike_counts,2); % number of neurons
 
-save_name = strcat(save_dir, base_name{1}, '_xds.mat');
+save_name = strcat(save_dir, filesep, base_name{1}, '_xds.mat');
 save(save_name,'xds');
 
 disp('XDS created and saved')
@@ -102,6 +101,7 @@ clear offline_vars
 % store predictions
 pred_vel = zeros(size(temp_v));
 pred_curs = zeros(size(temp_p));
+%%
 temp_curs = [0,0,0,0];
 for replay_idx = 1:size(offline_xds.curs_v,1)
     temp_curs = MultinomialSelection(offline_xds.spike_counts(replay_idx,:)', dpars_naive, temp_curs);
@@ -151,7 +151,7 @@ sgtitle(f_vel_recenter,'Offline Predicted Cursor Velocity, start each trial at 0
 %% compare with W Filter
 
 % create the historical data lags
-num_lags = 10; % start with 10 lags
+num_lags = 8; % start with 10 lags
 lagged_spikes = zeros(num_samples,num_lags*num_neurons);
 % lagged_spikes = zeros(num_samples,num_lags*num_neurons + 1);
 % lagged_spikes(:,num_lags*num_neurons + 1) = 1; % term to capture the mean
@@ -162,11 +162,13 @@ for lag_idx = 0:(num_lags-1)
 end
 
 % basic ridge regression -- saw little change
-filter_W = inv(lagged_spikes'*lagged_spikes + .1*eye(size(lagged_spikes,2)))*(lagged_spikes'*xds.curs_v); % could do the normal equation or something, but this is quicker ;)
+%filter_W = inv(lagged_spikes'*lagged_spikes + .1*eye(size(lagged_spikes,2)))*(lagged_spikes'*xds.curs_v); % could do the normal equation or something, but this is quicker ;)
+filter_W = inv(lagged_spikes'*lagged_spikes + .1*eye(size(lagged_spikes,2)))*(lagged_spikes'*xds.curs_p); % could do the normal equation or something, but this is quicker ;)
 
 % calculate quality of predictions -- both velocity and cursor
 pred_vel = lagged_spikes * filter_W; 
-pred_curs = cumsum(pred_vel)*bin_width;
+% pred_curs = cumsum(pred_vel)*bin_width;
+pred_curs = lagged_spikes*filter_W;
 
 % calculate with a third order non-linearity
 % nlm = fitnlm(xds.curs_v(:,1),pred_vel(:,1),'y ~ (b0+ b1*x + b3*x^3)', [0,1,1]);
@@ -178,7 +180,7 @@ vaf_curs = 1 - mean((pred_curs-xds.curs_p).^2,1)./var(xds.curs_p,1);
 
 % plot them
 vel_fig = plot_preds(xds.curs_v, pred_vel, xds.time_frame, {'Horizontal Velocity','Vertical Velocity'});
-pos_fig = plot(preds(xds.curs_p, pred_curs, xds.time_frame, {'Horizontal Cursor', 'Vertical Cursor'}));
+pos_fig = plot_preds(xds.curs_p, pred_curs, xds.time_frame, {'Horizontal Cursor', 'Vertical Cursor'});
 
 %% Run through xpc
 
@@ -186,7 +188,10 @@ pos_fig = plot(preds(xds.curs_p, pred_curs, xds.time_frame, {'Horizontal Cursor'
 online_flag = 1;
 
 % wiener filter or multinomial?
-MN_flag = 1;
+MN_flag = 0;
+
+% reset cursor at the beginning of each trial?
+reset_flag = 1; 
 
 % xpc settings -- for communication
 xpc_ip = '192.168.0.1'; % for sending the UDP packets of the X and Y
@@ -222,8 +227,8 @@ if online_flag == true
 end
 
 
-
-if mn_flag == true
+%store predictions -- different names online vs replay
+if MN_flag == true
     bci_name = 'MultiNomial';
     save([rec_dir, monkey, '_', datestr(now, 'YYYYmmdd_hhMM'), '_MNRDecoder.mat'],"dpars_naive")
 else
@@ -299,25 +304,29 @@ while ishandle(h)
         % Run it through the decoder
         if MN_flag == true
             curs = MultinomialSelection(firing_buffer', dpars_naive, curs);
+            curs = curs*1.00;
         else
             curs(3:4) = firing_buffer*filter_W; % vel = rates * W == 1x2 output
-            curs(1:2) = curs(1:2) + curs(3:4).*bin_width; % velocity to position
+            curs(1:2) = curs(1:2) + curs(3:4)*bin_width*6; % velocity to position
             % need to shift the lags over
             firing_buffer(num_neurons+1:num_lags*num_neurons) = firing_buffer(1:(num_lags-1)*num_neurons);
         end
         
         % cursor corrections -- to make the system usable!
         % limit at the edge of the screen
-        curs(1:2) = max(-12,min(12,curs(1:2)));
+        curs(1:2) = max(-10,min(10,curs(1:2)));
 
         % reset cursor to center if it's the start of a new trial
         % NOTE -- double check the # in the cell array! might be different
         % for the 256 cerebus
-        dig_data = ts_cell_array{151}(:,3); % only pull in the actual data
-        words = uint32(bitshift(bitand(hex2dec('ff00'),dig_Data),-8));
-        if any(words == 0x30) % look for "center target on"
-            curs = [0,0,0,0];
+        if reset_flag == true
+            dig_data = ts_cell_array{279,3}; % only pull in the actual data
+            words = uint32(bitshift(bitand(hex2dec('ff00'),dig_data),-8));
+            if any(words == 0x30) % look for "center target on"
+                curs = [0,0,0,0];
+            end
         end
+
 
 
         % parse to send to the XPC
@@ -333,13 +342,13 @@ while ishandle(h)
         % cursor
         fprintf(fid_pred,'%.04f\t',loop_time);
         fprintf(fid_pred,'%.02f\t',curs); 
-        fprintf(fid_pred,'\n');
+        fprintf(fid_pred, newline);
         
         % spikes
         if online_flag == true
             fprintf(fid_spike,'%.04f\t',loop_time);
             fprintf(fid_spike, '%d\t', firing_buffer);
-            fprintf(fid_spike,'\n');
+            fprintf(fid_spike, newline);
         end
 
 
@@ -379,8 +388,8 @@ end
 %% Post recording analysis
 % Look through the predicted cursor values, number of rewards etc
 
-[cursor_file,cursor_dir] = uigetfile('Cursor.txt');
-[spike_file,spike_dir] = uigetfile('Spikes.txt');
+[cursor_file,cursor_dir] = uigetfile('c:\data\Tot\Cursor.txt');
+[spike_file,spike_dir] = uigetfile('c:\data\Tot\Spikes.txt');
 
 fid = fopen(join([cursor_dir,cursor_file],filesep),'r');
 cursor = fscanf(fid,'%f');
@@ -388,7 +397,7 @@ cursor = reshape(cursor,5,length(cursor)/5)'; % change to a Tx5 array
 fclose(fid);
 
 n_timepoints = size(cursor,1);
-fid = fopen(spike_file,'r');
+fid = fopen([spike_dir,filesep,spike_file],'r');
 spikes = fscanf(fid, '%f');
 spikes = reshape(spikes, length(spikes)/n_timepoints,n_timepoints)';
 fclose(fid);
